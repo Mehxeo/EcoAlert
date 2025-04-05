@@ -5,39 +5,20 @@ import random
 from datetime import datetime, timedelta
 import requests
 import openai
-from env import *
 from dotenv import load_dotenv
-load_dotenv()
 
+load_dotenv()  # Load environment variables from .env file
 
 app = Flask(__name__, static_folder='.')
 
-# Configure OpenAI client
-openai.api_key = OPENAI_API_KEY
+# Configure API clients
+openai.api_key = os.getenv('OPENAI_API_KEY')
+OPENWEATHER_API_KEY = os.getenv('OPENWEATHER_API_KEY')
 
-@app.route('/')
-def home():
-    return send_from_directory('.', 'index.html')
-
-@app.route('/map')
-def map_page():
-    return send_from_directory('.', 'map.html')
-
-@app.route('/css/<path:path>')
-def send_css(path):
-    return send_from_directory('css', path)
-
-@app.route('/js/<path:path>')
-def send_js(path):
-    return send_from_directory('js', path)
-
-@app.route('/images/<path:path>')
-def send_images(path):
-    return send_from_directory('images', path)
+# ... (keep your existing routes until get_weather)
 
 @app.route('/api/weather', methods=['GET'])
 def get_weather():
-    # Get latitude and longitude from query parameters
     lat = request.args.get('lat')
     lng = request.args.get('lng')
     
@@ -45,98 +26,86 @@ def get_weather():
         return jsonify({"error": "Missing latitude or longitude parameters"}), 400
     
     try:
-        # Check if we have an API key for OpenWeather
-        if OPENWEATHER_API_KEY:
-            # Call the OpenWeather API
-            weather_data = get_real_weather_data(float(lat), float(lng))
-        else:
-            # Fall back to mock data if no API key
-            weather_data = generate_mock_weather_data(float(lat), float(lng))
-            
+        weather_data = get_real_weather_data(float(lat), float(lng))
         return jsonify(weather_data)
     except Exception as e:
         print(f"Error fetching weather data: {str(e)}")
-        return jsonify({"error": f"Failed to fetch weather data: {str(e)}"}), 500
+        return jsonify({"error": "Failed to fetch weather data"}), 500
 
-@app.route('/api/environmental-insights', methods=['POST'])
-def get_environmental_insights():
+def generate_ai_environmental_insights(lat, lng, location_name, weather_data):
+    """Generate environmental insights using OpenAI API"""
     try:
-        data = request.json
-        lat = data.get('lat')
-        lng = data.get('lng')
-        location_name = data.get('locationName')
-        weather_data = data.get('weatherData')
+        # ... existing prompt setup ...
         
-        if not lat or not lng or not location_name:
-            return jsonify({"error": "Missing required parameters"}), 400
+        response = openai.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": "You are an environmental science expert. Provide accurate, detailed environmental insights based on location and weather data. Always respond with valid JSON."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7
+        )
         
-        # Check if we have an API key for OpenAI
-        if OPENAI_API_KEY:
-            # Generate insights using OpenAI
-            insights = generate_ai_environmental_insights(lat, lng, location_name, weather_data)
-        else:
-            # Fall back to mock data if no API key
-            insights = generate_mock_environmental_insights(lat, lng, location_name, weather_data)
-        
-        return jsonify(insights)
+        ai_response = response.choices[0].message.content
+        return json.loads(ai_response)
     except Exception as e:
-        print(f"Error generating environmental insights: {str(e)}")
-        return jsonify({"error": f"Failed to generate environmental insights: {str(e)}"}), 500
-
-@app.route('/api/ask-ai', methods=['POST'])
-def ask_ai():
-    try:
-        data = request.json
-        question = data.get('question')
-        location = data.get('location')
-        weather_data = data.get('weatherData')
-        environmental_insights = data.get('environmentalInsights')
-        
-        if not question or not location or not weather_data or not environmental_insights:
-            return jsonify({"error": "Missing required parameters"}), 400
-        
-        # Check if we have an API key for OpenAI
-        if OPENAI_API_KEY:
-            # Generate response using OpenAI
-            response = generate_ai_response_with_openai(question, location, weather_data, environmental_insights)
-        else:
-            # Fall back to rule-based response if no API key
-            response = generate_rule_based_response(question, location, weather_data, environmental_insights)
-        
-        return jsonify({"response": response})
-    except Exception as e:
-        print(f"Error generating AI response: {str(e)}")
-        return jsonify({"error": f"Failed to generate AI response: {str(e)}"}), 500
+        print(f"Error generating AI insights: {str(e)}")
+        return jsonify({"error": "Failed to generate environmental insights"}), 500
 
 def get_real_weather_data(lat, lng):
     """Get real weather data from OpenWeather API"""
+    if not OPENWEATHER_API_KEY:
+        raise ValueError("OpenWeather API key not configured")
+    
+    base_url = "https://api.openweathermap.org/data/2.5"
+    
     # Current weather
-    current_url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lng}&units=metric&appid={OPENWEATHER_API_KEY}"
+    current_url = f"{base_url}/weather?lat={lat}&lon={lng}&units=metric&appid={OPENWEATHER_API_KEY}"
     current_response = requests.get(current_url)
+    current_response.raise_for_status()  # Raises exception for 4XX/5XX status
     current_data = current_response.json()
     
     # Forecast
-    forecast_url = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lng}&units=metric&appid={OPENWEATHER_API_KEY}"
+    forecast_url = f"{base_url}/forecast?lat={lat}&lon={lng}&units=metric&appid={OPENWEATHER_API_KEY}"
     forecast_response = requests.get(forecast_url)
+    forecast_response.raise_for_status()
     forecast_data = forecast_response.json()
     
     # Air quality
-    air_url = f"https://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lng}&appid={OPENWEATHER_API_KEY}"
+    air_url = f"{base_url}/air_pollution?lat={lat}&lon={lng}&appid={OPENWEATHER_API_KEY}"
     air_response = requests.get(air_url)
-    air_data = air_response.json()
+    air_data = air_response.json() if air_response.status_code == 200 else None
     
-    # Process and format the data
-    location_name = current_data.get('name', f"Location at {lat}, {lng}")
+    # Process data
+    location_name = current_data.get('name', f"Location at {lat:.4f}, {lng:.4f}")
     
-    # Map AQI to category
-    aqi_categories = ["Good", "Good", "Moderate", "Unhealthy for Sensitive Groups", "Unhealthy", "Very Unhealthy"]
-    aqi_index = air_data.get('list', [{}])[0].get('main', {}).get('aqi', 0)
-    aqi_category = aqi_categories[aqi_index] if 0 <= aqi_index < len(aqi_categories) else "Unknown"
+    # Process air quality data if available
+    air_quality = None
+    if air_data and 'list' in air_data and air_data['list']:
+        aqi = air_data['list'][0]['main']['aqi']
+        components = air_data['list'][0]['components']
+        
+        aqi_categories = [
+            "Good", 
+            "Fair", 
+            "Moderate", 
+            "Poor", 
+            "Very Poor"
+        ]
+        aqi_category = aqi_categories[aqi-1] if 1 <= aqi <= 5 else "Unknown"
+        
+        air_quality = {
+            "aqi": aqi,
+            "pm25": round(components.get('pm2_5', 0)),
+            "pm10": round(components.get('pm10', 0)),
+            "o3": round(components.get('o3', 0)),
+            "no2": round(components.get('no2', 0)),
+            "so2": round(components.get('so2', 0)),
+            "co": round(components.get('co', 0)),
+            "category": aqi_category,
+        }
     
-    # Process air quality components
-    components = air_data.get('list', [{}])[0].get('components', {})
-    
-    # Process forecast data - get one entry per day
+    # Process forecast data
     daily_forecasts = []
     forecast_by_day = {}
     
@@ -155,7 +124,7 @@ def get_real_weather_data(lat, lng):
         max_temp = max(temps)
         min_temp = min(temps)
         
-        # Use the middle of the day for weather description if available
+        # Use the middle of the day for weather description
         mid_day_item = items[len(items)//2] if items else items[0]
         weather = mid_day_item['weather'][0]
         
@@ -166,27 +135,9 @@ def get_real_weather_data(lat, lng):
             "weatherCode": weather['id'],
             "weatherDescription": weather['description'].capitalize(),
             "icon": weather['icon'],
-            "precipitation": round(sum(item.get('pop', 0) * 100 for item in items) / len(items)),  # Probability of precipitation
+            "precipitation": round(sum(item.get('pop', 0) * 100 for item in items) / len(items)),
             "humidity": round(sum(item['main']['humidity'] for item in items) / len(items)),
             "windSpeed": round(sum(item['wind']['speed'] for item in items) / len(items)),
-        })
-    
-    # Fill in with mock data if we don't have enough days
-    while len(daily_forecasts) < 7:
-        last_day = datetime.strptime(daily_forecasts[-1]['date'], "%a, %b %d")
-        next_day = last_day + timedelta(days=1)
-        next_day_str = next_day.strftime("%a, %b %d")
-        
-        daily_forecasts.append({
-            "date": next_day_str,
-            "maxTemp": daily_forecasts[-1]['maxTemp'] + random.randint(-2, 2),
-            "minTemp": daily_forecasts[-1]['minTemp'] + random.randint(-2, 2),
-            "weatherCode": daily_forecasts[-1]['weatherCode'],
-            "weatherDescription": daily_forecasts[-1]['weatherDescription'],
-            "icon": daily_forecasts[-1]['icon'],
-            "precipitation": daily_forecasts[-1]['precipitation'] + random.randint(-10, 10),
-            "humidity": daily_forecasts[-1]['humidity'] + random.randint(-5, 5),
-            "windSpeed": daily_forecasts[-1]['windSpeed'] + random.randint(-2, 2),
         })
     
     return {
@@ -199,138 +150,106 @@ def get_real_weather_data(lat, lng):
             "windSpeed": round(current_data['wind']['speed']),
             "windDirection": current_data['wind'].get('deg', 0),
             "pressure": current_data['main']['pressure'],
-            "uvIndex": 5,  # OpenWeather doesn't provide UV index in the basic API
-            "visibility": round(current_data['visibility'] / 1000),  # Convert to km
+            "uvIndex": 5,  # Not available in free tier
+            "visibility": round(current_data['visibility'] / 1000) if 'visibility' in current_data else 10,
             "weatherCode": current_data['weather'][0]['id'],
             "weatherDescription": current_data['weather'][0]['description'].capitalize(),
             "icon": current_data['weather'][0]['icon'],
         },
-        "airQuality": {
-            "aqi": aqi_index,
-            "pm25": round(components.get('pm2_5', 0)),
-            "pm10": round(components.get('pm10', 0)),
-            "o3": round(components.get('o3', 0)),
-            "no2": round(components.get('no2', 0)),
-            "so2": round(components.get('so2', 0)),
-            "co": round(components.get('co', 0)),
-            "category": aqi_category,
-        },
+        "airQuality": air_quality,
         "forecast": daily_forecasts,
     }
 
-def generate_mock_weather_data(lat, lng):
-    """Generate mock weather data for demo purposes"""
-    weather_code_index = random.randint(0, 3)
-    weather_descriptions = ["Clear sky", "Partly cloudy", "Cloudy", "Light rain"]
-    weather_icons = ["01d", "02d", "03d", "10d"]
+
+
+def get_real_weather_data(lat, lng):
+    """Get real weather data from OpenWeather API"""
+    if not OPENWEATHER_API_KEY:
+        raise ValueError("OpenWeather API key not configured")
     
-    temperature = round(15 + random.random() * 20)
+    base_url = "https://api.openweathermap.org/data/2.5"
     
-    aqi_categories = ["Good", "Moderate", "Unhealthy for Sensitive Groups", "Unhealthy"]
-    aqi_category_index = random.randint(0, 3)
+    # Get all data in a single call using onecall API
+    url = f"{base_url}/onecall?lat={lat}&lon={lng}&exclude=minutely,hourly,alerts&units=metric&appid={OPENWEATHER_API_KEY}"
+    response = requests.get(url)
+    response.raise_for_status()
+    data = response.json()
+    
+    # Get location name from reverse geocoding
+    reverse_geo_url = f"http://api.openweathermap.org/geo/1.0/reverse?lat={lat}&lon={lng}&limit=1&appid={OPENWEATHER_API_KEY}"
+    geo_response = requests.get(reverse_geo_url)
+    location_name = f"{lat:.4f}, {lng:.4f}"
+    if geo_response.ok:
+        geo_data = geo_response.json()
+        if geo_data:
+            location_name = geo_data[0].get('name', location_name)
+    
+    # Process current weather
+    current = data.get('current', {})
+    daily_forecast = data.get('daily', [])[:7]
+    
+    # Get air quality data
+    air_url = f"{base_url}/air_pollution?lat={lat}&lon={lng}&appid={OPENWEATHER_API_KEY}"
+    air_response = requests.get(air_url)
+    air_data = air_response.json() if air_response.status_code == 200 else None
     
     return {
-        "location": f"Location at {lat}, {lng}",
+        "location": location_name,
         "coordinates": {"lat": lat, "lng": lng},
-        "current": {
-            "temperature": temperature,
-            "feelsLike": round(temperature - 2 + random.random() * 4),
-            "humidity": round(40 + random.random() * 50),
-            "windSpeed": round(5 + random.random() * 20),
-            "windDirection": round(random.random() * 360),
-            "pressure": round(1000 + random.random() * 30),
-            "uvIndex": round(1 + random.random() * 10),
-            "visibility": round(5 + random.random() * 15),
-            "weatherCode": weather_code_index,
-            "weatherDescription": weather_descriptions[weather_code_index],
-            "icon": weather_icons[weather_code_index],
-        },
-        "airQuality": {
-            "aqi": round(20 + random.random() * 150),
-            "pm25": round(5 + random.random() * 30),
-            "pm10": round(10 + random.random() * 50),
-            "o3": round(20 + random.random() * 60),
-            "no2": round(5 + random.random() * 40),
-            "so2": round(2 + random.random() * 20),
-            "co": round(200 + random.random() * 800),
-            "category": aqi_categories[aqi_category_index],
-        },
-        "forecast": [
-            {
-                "date": (datetime.now() + timedelta(days=i)).strftime("%a, %b %d"),
-                "maxTemp": round(20 + random.random() * 15),
-                "minTemp": round(10 + random.random() * 15),
-                "weatherCode": random.randint(0, 3),
-                "weatherDescription": weather_descriptions[random.randint(0, 3)],
-                "icon": weather_icons[random.randint(0, 3)],
-                "precipitation": round(random.random() * 100),
-                "humidity": round(40 + random.random() * 50),
-                "windSpeed": round(5 + random.random() * 20),
-            }
-            for i in range(7)
-        ],
+        "current": process_current_data(current),
+        "airQuality": process_air_quality(air_data),
+        "forecast": [process_forecast(day) for day in daily_forecast]
     }
 
-def generate_mock_environmental_insights(lat, lng, location_name, weather_data):
-    """Generate mock environmental insights for demo purposes"""
-    risk_levels = ["low", "moderate", "high", "severe"]
-    ecosystem_types = ["Temperate forest", "Grassland", "Coastal", "Urban"]
+def process_current_data(current):
+    return {
+        "temperature": round(current.get('temp', 0)),
+        "feelsLike": round(current.get('feels_like', 0)),
+        "humidity": current.get('humidity', 0),
+        "windSpeed": round(current.get('wind_speed', 0)),
+        "windDirection": current.get('wind_deg', 0),
+        "pressure": current.get('pressure', 0),
+        "uvi": round(current.get('uvi', 0), 1),
+        "visibility": round(current.get('visibility', 10000) / 1000),
+        "weatherCode": current['weather'][0]['id'],
+        "weatherDescription": current['weather'][0]['description'].capitalize(),
+        "icon": current['weather'][0]['icon'],
+    }
+
+def process_forecast(day):
+    return {
+        "date": datetime.fromtimestamp(day['dt']).strftime("%a, %b %d"),
+        "maxTemp": round(day['temp']['max']),
+        "minTemp": round(day['temp']['min']),
+        "weatherCode": day['weather'][0]['id'],
+        "weatherDescription": day['weather'][0]['description'].capitalize(),
+        "icon": day['weather'][0]['icon'],
+        "precipitation": round(day.get('pop', 0) * 100),
+        "humidity": day.get('humidity', 0),
+        "windSpeed": round(day.get('wind_speed', 0)),
+    }
+
+def process_air_quality(air_data):
+    if not air_data or not air_data.get('list'):
+        return None
+    
+    aqi = air_data['list'][0]['main']['aqi']
+    components = air_data['list'][0]['components']
     
     return {
-        "risks": [
-            {
-                "type": "Flooding",
-                "level": random.choice(risk_levels),
-                "description": "Based on topography and proximity to water bodies, this area has potential flood risk during heavy rainfall events."
-            },
-            {
-                "type": "Drought",
-                "level": random.choice(risk_levels),
-                "description": "Historical climate data indicates periodic drought conditions that may affect water availability."
-            },
-            {
-                "type": "Air Pollution",
-                "level": random.choice(risk_levels),
-                "description": "Urban density and industrial activity contribute to occasional poor air quality conditions."
-            }
-        ],
-        "sustainability": [
-            {
-                "category": "Water Conservation",
-                "recommendations": [
-                    "Install rainwater harvesting systems to collect and reuse rainwater",
-                    "Use drought-resistant native plants in landscaping",
-                    "Implement water-efficient fixtures and appliances"
-                ]
-            },
-            {
-                "category": "Energy Efficiency",
-                "recommendations": [
-                    "Consider solar panel installation due to high annual sunshine hours",
-                    "Improve building insulation to reduce heating/cooling needs",
-                    "Use smart thermostats and energy-efficient appliances"
-                ]
-            },
-            {
-                "category": "Biodiversity",
-                "recommendations": [
-                    "Plant native species to support local wildlife",
-                    "Create wildlife corridors to connect fragmented habitats",
-                    "Reduce use of pesticides and herbicides"
-                ]
-            }
-        ],
-        "localEnvironment": {
-            "ecosystemType": random.choice(ecosystem_types),
-            "biodiversity": "This region supports a variety of plant and animal species, including several that are endemic to the area.",
-            "conservation": "Local conservation efforts focus on habitat preservation and restoration of natural waterways.",
-            "challenges": [
-                "Habitat fragmentation due to urban development",
-                "Invasive species affecting native biodiversity",
-                "Water quality concerns in local watersheds"
-            ]
-        }
+        "aqi": aqi,
+        "pm25": round(components.get('pm2_5', 0)),
+        "pm10": round(components.get('pm10', 0)),
+        "o3": round(components.get('o3', 0)),
+        "no2": round(components.get('no2', 0)),
+        "so2": round(components.get('so2', 0)),
+        "co": round(components.get('co', 0)),
+        "category": get_aqi_category(aqi),
     }
+
+def get_aqi_category(aqi):
+    categories = ["Good", "Fair", "Moderate", "Poor", "Very Poor"]
+    return categories[aqi-1] if 1 <= aqi <= 5 else "Unknown"
 
 def generate_ai_environmental_insights(lat, lng, location_name, weather_data):
     """Generate environmental insights using OpenAI API"""
@@ -385,7 +304,6 @@ def generate_ai_environmental_insights(lat, lng, location_name, weather_data):
         return json.loads(ai_response)
     except Exception as e:
         print(f"Error generating AI insights: {str(e)}")
-        # Fall back to mock data if AI generation fails
         return generate_mock_environmental_insights(lat, lng, location_name, weather_data)
 
 def generate_ai_response_with_openai(question, location, weather_data, environmental_insights):
@@ -405,7 +323,7 @@ def generate_ai_response_with_openai(question, location, weather_data, environme
         
         # Call OpenAI API
         response = openai.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-4o",  #change model?
             messages=[
                 {"role": "system", "content": "You are an environmental and weather expert assistant. Provide accurate, helpful responses based on the provided data."},
                 {"role": "user", "content": prompt}
@@ -423,7 +341,7 @@ def generate_ai_response_with_openai(question, location, weather_data, environme
 
 def generate_rule_based_response(question, location, weather_data, environmental_insights):
     """Generate a rule-based response to a user question"""
-    # Convert question to lowercase for easier matching
+    # Convert question to lowercase
     q = question.lower()
     
     # Weather forecast related questions
