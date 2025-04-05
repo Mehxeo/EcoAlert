@@ -384,10 +384,20 @@
   
   .search-form {
     display: flex;
+    flex-direction: column;
     margin-bottom: 20px;
     gap: 10px;
   }
   
+  .search-form ul {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 0.5rem; /* spacing between items */
+  }
+
   .search-form input {
     flex: 1;
     padding: 12px 15px;
@@ -417,6 +427,29 @@
     background-color: var(--primary-color-dark);
   }
   
+  .search-suggestion-item {
+    /* padding: 10px; */
+    font: Roboto;
+    width: 200px;
+    background: var(--card-bg-solid);
+    border-radius: 5px;
+    cursor: pointer;
+    /* transition: background-color 0.3s ease; */
+    opacity: 0;
+    animation: fadeIn 0.5s ease-in forwards;
+    animation-delay: calc(var(--index) * 0.02s)
+  }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateX(-5px) translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) translateY(0);
+    }
+  }
+
   .map {
     height: 400px !important;
     width: 100%;

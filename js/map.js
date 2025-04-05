@@ -97,6 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const searchForm = document.getElementById("search-form");
         const searchButton = document.getElementById("search-button");
         const suggestions = document.createElement("ul");
+        suggestions.style.display = "block-inline";
         
         let chosenLocation;
 
@@ -120,11 +121,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (data.results) {
               suggestions.innerHTML = "";
-              data.results.forEach((Location) => {
+              data.results.forEach((Location, index) => {
                 if (Location.name && Location.admin1 && Location.country) {
                   const suggestionItem = document.createElement("button");
                   suggestionItem.textContent = `${Location.name}, ${Location.admin1}, ${Location.country}`;
-                  console.log(suggestionItem.textContent);
+                  suggestionItem.classList.add("search-suggestion-item");
+                  suggestionItem.style.setProperty('--index', index);
+  
+
                   suggestionItem.addEventListener("click", () => {
                       chosenLocation = Location;
                       const heading = document.createElement("h3");
