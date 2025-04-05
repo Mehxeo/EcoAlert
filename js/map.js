@@ -156,9 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                   suggestionItem.addEventListener("click", () => {
                       chosenLocation = Location;
-                      const heading = document.createElement("h3");
-                      heading.textContent = `${Location.name}, ${Location.admin1}, ${Location.country}`;
-                      searchInput.replaceWith(heading);
+                      searchInput.value = `${Location.name}, ${Location.admin1}, ${Location.country}`;
                       suggestions.innerHTML = ""; // clear suggestions list
                       searchButton.style.display = "inline";
                   });

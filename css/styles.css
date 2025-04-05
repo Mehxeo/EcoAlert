@@ -387,6 +387,7 @@
     flex-direction: column;
     margin-bottom: 20px;
     gap: 10px;
+    align-items: center;
   }
   
   .search-form ul {
@@ -404,6 +405,7 @@
     border: 1px solid var(--border-color);
     border-radius: 5px;
     font-size: 1rem;
+    min-width: 400px;
     outline: none;
     background-color: var(--card-bg-solid);
     color: var(--text-color);
@@ -412,8 +414,12 @@
   
   .search-form button {
     display: flex;
+    justify-content: center;
     align-items: center;
+    height: 100%;
     gap: 8px;
+    min-height: 42px;
+    line-height: 1;
     background-color: var(--primary-color);
     color: white;
     border: none;
