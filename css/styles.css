@@ -189,6 +189,7 @@
     background: var(--card-bg);
     border-radius: 10px;
     box-shadow: var(--shadow);
+    height: 600px;
     padding: 40px;
     transition: background 0.3s ease, box-shadow 0.3s ease;
   }
