@@ -118,25 +118,81 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   
     function setupEventListeners() {
+        const searchInput = document.getElementById("location-input");
+        const searchForm = document.getElementById("search-form");
+        const searchButton = document.getElementById("search-button");
+        const suggestions = document.createElement("ul");
+        suggestions.style.display = "block-inline";
+        
+        let chosenLocation;
+
+        suggestions.classList.add("suggestions");
+        searchInput.parentNode.appendChild(suggestions);
+        
+        
+        // GeoCoding for City Search
+        searchInput.addEventListener("input", async (event) => {
+          if (!searchInput) return
+          const query = event.target.value.trim();
+          if (query.length <= 2) {
+            suggestions.innerHTML = "";
+            return;
+          }
+
+          try {
+            const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=10&language=en&format=json`)
+            
+            const data = await response.json();
+
+            if (data.results) {
+              suggestions.innerHTML = "";
+              data.results.forEach((Location, index) => {
+                if (Location.name && Location.admin1 && Location.country) {
+                  const suggestionItem = document.createElement("button");
+                  suggestionItem.textContent = `${Location.name}, ${Location.admin1}, ${Location.country}`;
+                  suggestionItem.classList.add("search-suggestion-item");
+                  suggestionItem.style.setProperty('--index', index);
+  
+
+                  suggestionItem.addEventListener("click", () => {
+                      chosenLocation = Location;
+                      const heading = document.createElement("h3");
+                      heading.textContent = `${Location.name}, ${Location.admin1}, ${Location.country}`;
+                      searchInput.replaceWith(heading);
+                      suggestions.innerHTML = ""; // clear suggestions list
+                      searchButton.style.display = "inline";
+                  });
+                  suggestions.appendChild(suggestionItem);
+                }
+              }
+              )
+            }
+            else {
+              suggestions.innerHTML = "<h3>No Results Found</h3>"
+            }
+          }
+          catch (e) {
+            console.error("Error" + e);
+          }
+        }
+      );
       document.getElementById("search-form").addEventListener("submit", (e) => {
         e.preventDefault()
-        const searchInput = document.getElementById("location-input").value.trim()
-  
-        if (!searchInput) return
-  
+        
         showLoading(true)
   
         // add geocoding service
         setTimeout(() => {
-          const randomLat = Math.random() * 60 - 30
-          const randomLng = Math.random() * 360 - 180
+          const Lat = chosenLocation.latitude;
+          const Lng = chosenLocation.longitude;
+          const locationName = `${chosenLocation.name}, ${chosenLocation.admin1}, ${chosenLocation.country}`;
   
           // select the "found" location
-          selectLocation(randomLat, randomLng, searchInput)
+          selectLocation(Lat, Lng, locationName)
   
           // hide loading indicator
           showLoading(false)
-        }, 1000)
+        }, 500)
       })
   
       const tabButtons = document.querySelectorAll(".tab-button")
