@@ -3,20 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EcoAlert - Environmental Insights</title>
+    <title>EnviroVision - Environmental Insights</title>
     <link rel="stylesheet" href="css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
     <script src="js/theme.js" defer></script>
     <script src="js/main.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Sign In</title>
+    <!-- Firebase SDK -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+    <script type="module" src="firebase/firebaseconfig.js"></script>
+    <script type="module" src="js/firestore.js"></script>
+    <script type="module" src="js/auth.js"></script>
+    <style>
+        .auth-container {
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+        }
+        .sign-in-button {
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+        .sign-in-button:hover {
+            background-color: #357ABD;
+        }
+        .sign-in-button img {
+            margin-right: 8px;
+            width: 18px;
+            height: 18px;
+        }
+        .sign-out-button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .sign-out-button:hover {
+            background-color: #d32f2f;
+        }
+        .user-info {
+            display: none;
+            align-items: center;
+        }
+        .user-photo {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+        .user-name {
+            font-weight: 500;
+        }
+        .user-email {
+            font-size: 0.8rem;
+            color: #666;
+        }
+    </style>
 </head>
 <body class="light-theme">
     <div class="container">
         <header>
             <div class="logo">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
-                <h1>EcoAlert</h1>
+                <h1>EnviroVision</h1>
             </div>
             <nav>
                 <ul class="nav-links">
@@ -27,6 +97,27 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sun-icon"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="moon-icon" style="display: none;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
                         </button>
+                    </li>
+                    <li class="auth-container">
+                        <!-- Sign In Button -->
+                        <button id="sign-in-button" class="sign-in-button">
+                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo">
+                            Sign in with Google
+                        </button>
+                        
+                        <!-- Sign Out Button (hidden by default) -->
+                        <button id="sign-out-button" class="sign-out-button" style="display: none;">
+                            Sign Out
+                        </button>
+                        
+                        <!-- User Info (hidden by default) -->
+                        <div id="user-info" class="user-info" style="display: none;">
+                            <img id="user-photo" class="user-photo" src="" alt="User Photo">
+                            <div class="user-details">
+                                <span id="user-name" class="user-name"></span>
+                                <span id="user-email" class="user-email"></span>
+                            </div>
+                        </div>
                     </li>
                 </ul>
             </nav>
@@ -44,9 +135,11 @@
                         </a>
                     </div>
                     <div class="hero-image">
-                        <img src="images/environmental-data.png" alt="Environmental data visualization">
+                        <img src="images/environmental-data.jpg" alt="Environmental data visualization">
                     </div>
                 </div>
+            
+
             </section>
 
             <section class="features">
@@ -164,7 +257,7 @@
             <div class="footer-content">
                 <div class="footer-logo">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
-                    <p>© 2025 EcoAlert. All rights reserved.</p>
+                    <p>© 2025 EnviroVision. All rights reserved.</p>
                 </div>
                 <nav class="footer-links">
                     <a href="#">Terms</a>
@@ -174,6 +267,10 @@
             </div>
         </footer>
     </div>
+    <!-- Custom Scripts -->
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>
+
+
 
