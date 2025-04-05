@@ -10,7 +10,9 @@ document.addEventListener("DOMContentLoaded", () => {
     let weatherData = null
     let environmentalInsights = null
     let useMetric = true // Default to Celsius
-    
+    let lat = null
+    let long = null
+
     function getLocation() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(success, error);
@@ -19,7 +21,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
     function success(position) {
-      return (position.coords.latitude, position.coords.longitude);
+      lat = position.coords.latitude
+      long =  position.coords.longitude;
+      console.log(lat, long)
+      const locationName = `Location at ${lat.toFixed(4)}, ${long.toFixed(4)}`
+  
+      selectLocation(lat, long, locationName);
     }
     
     function error() {
@@ -32,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
     // make map with Leaflet
     function initMap() {
-      console.log(getLocation())  
+      getLocation()  
       const mapContainer = document.getElementById("map")
       if (!mapContainer) {
         console.error("Map container not found")
