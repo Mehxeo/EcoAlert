@@ -5,15 +5,12 @@ import random
 from datetime import datetime, timedelta
 import requests
 import openai
+from env import *
 from dotenv import load_dotenv
 load_dotenv()
 
 
 app = Flask(__name__, static_folder='.')
-
-# Set API keys
-OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 # Configure OpenAI client
 openai.api_key = OPENAI_API_KEY
