@@ -1,6 +1,7 @@
 // Theme toggle functionality
 document.addEventListener("DOMContentLoaded", () => {
     const themeToggle = document.getElementById("theme-toggle")
+    const environmentImage = document.getElementById("n-image")
     const sunIcon = document.querySelector(".sun-icon")
     const moonIcon = document.querySelector(".moon-icon")
     const body = document.body
@@ -30,20 +31,25 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("theme", "light")
         sunIcon.style.display = "block"
         moonIcon.style.display = "none"
+        environmentImage.src = 'images/environmental-data-dark.png';
       } else {
         body.classList.remove("light-theme")
         body.classList.add("dark-theme")
         localStorage.setItem("theme", "dark")
         sunIcon.style.display = "none"
         moonIcon.style.display = "block"
+        environmentImage.src = 'images/environmental-data.png'
       }
-  
+
+      // Change image if dark mode toggle
+      console.log(environmentImage.src)
+
       // Update map styles if map exists
       if (window.map && typeof window.updateMapStyle === "function") {
         window.updateMapStyle()
       }
   
-      // Add animation effect
+        // Add animation effect
       themeToggle.classList.add("clicked")
       setTimeout(() => {
         themeToggle.classList.remove("clicked")

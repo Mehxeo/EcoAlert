@@ -5,7 +5,6 @@ import random
 from datetime import datetime, timedelta
 import requests
 import openai
-from env import *
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -13,13 +12,15 @@ load_dotenv()
 app = Flask(__name__, static_folder='.')
 
 # Configure OpenAI client
-openai.api_key = OPENAI_API_KEY
+openai.api_key = os.getenv("OPENAI_API_KEY")
+OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
 
-@app.route('/')
+@app.route("/")
+@app.route('/index.html')
 def home():
     return send_from_directory('.', 'index.html')
 
-@app.route('/map')
+@app.route('/map.html')
 def map_page():
     return send_from_directory('.', 'map.html')
 

@@ -10,6 +10,21 @@ document.addEventListener("DOMContentLoaded", () => {
     let weatherData = null
     let environmentalInsights = null
     let useMetric = true // Default to Celsius
+    
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(success, error);
+      } else {
+        alert("Geolocation not supported")
+      }
+    }
+    function success(position) {
+      return (position.coords.latitude, position.coords.longitude);
+    }
+    
+    function error() {
+      alert("Sorry, no position available.");
+    }
   
     initMap()
   
@@ -17,6 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
     // make map with Leaflet
     function initMap() {
+      console.log(getLocation())  
       const mapContainer = document.getElementById("map")
       if (!mapContainer) {
         console.error("Map container not found")
