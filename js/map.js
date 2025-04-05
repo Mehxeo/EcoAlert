@@ -45,6 +45,31 @@ document.addEventListener("DOMContentLoaded", () => {
   
     
     setupEventListeners()
+
+    function addLegend(layerName) {
+      const legendUrl = {
+        Clouds: "images/NT2.png",
+        Precipitation: "images/PR.png",
+        Pressure: "images/PN.png",
+        Wind: "images/UV.png",
+        Temperature: "images/TT.png",
+        Clear: ""
+      }[layerName]
+    
+      if (!legendUrl) return
+    
+      if (window.legendControl) {
+        map.removeControl(window.legendControl)
+      }
+    
+      window.legendControl = L.control({ position: "bottomleft" })
+      window.legendControl.onAdd = function () {
+        const div = L.DomUtil.create("div", "legend")
+        div.innerHTML = `<img src="${legendUrl}" alt="${layerName} legend" style="width:80px; mix-blend-mode: multiply; height:180px; opacity:0.5; border:1px solid #ccc; background:white; padding:5px;">`
+        return div
+      }
+      window.legendControl.addTo(map)
+    }
   
     // make map with Leaflet
     function initMap(finalCallback) {
@@ -72,6 +97,34 @@ document.addEventListener("DOMContentLoaded", () => {
         })
     
         setTimeout(() => {
+          const apiKey = "7f20fc2f93e77c7761113eb0ccf55653"
+          const weatherBaseLayers  = {
+            Clouds: L.tileLayer(`https://tile.openweathermap.org/map/clouds/{z}/{x}/{y}.png?appid=${apiKey}`, {
+              attribution: '&copy; <a href="https://openweathermap.org">OpenWeatherMap</a>'
+            }),
+            Precipitation: L.tileLayer(`https://tile.openweathermap.org/map/precipitation/{z}/{x}/{y}.png?appid=${apiKey}`, {
+              attribution: '&copy; <a href="https://openweathermap.org">OpenWeatherMap</a>'
+            }),
+            Pressure: L.tileLayer(`https://tile.openweathermap.org/map/pressure_new/{z}/{x}/{y}.png?appid=${apiKey}`, {
+              attribution: '&copy; <a href="https://openweathermap.org">OpenWeatherMap</a>'
+            }),
+            Wind: L.tileLayer(`https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=${apiKey}`, {
+              attribution: '&copy; <a href="https://openweathermap.org">OpenWeatherMap</a>'
+            }),
+            Temperature: L.tileLayer(`https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=${apiKey}`, {
+              attribution: '&copy; <a href="https://openweathermap.org">OpenWeatherMap</a>'
+            }),
+            Clear: L.tileLayer()
+          }
+
+          weatherBaseLayers.Temperature.addTo(map)
+          addLegend("Temperature")
+
+          Object.entries(weatherBaseLayers).forEach(([name, layer]) => {
+            layer.on("add", () => addLegend(name))
+          })
+
+          L.control.layers(weatherBaseLayers, null, { collapsed: false }).addTo(map)
           map.invalidateSize()
     
           // When map is ready, get user location
