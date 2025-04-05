@@ -11,7 +11,7 @@ export default function Home() {
         <header className="flex justify-between items-center mb-12">
           <div className="flex items-center gap-2">
             <Leaf className="h-8 w-8 text-green-600 dark:text-green-400" />
-            <h1 className="text-2xl font-bold text-green-700 dark:text-green-400">EnviroVision</h1>
+            <h1 className="text-2xl font-bold text-green-700 dark:text-green-400">EcoAlert</h1>
           </div>
           <nav className="flex items-center gap-6">
             <Link
@@ -200,7 +200,7 @@ export default function Home() {
           <div className="container flex flex-col items-center justify-between gap-4 md:flex-row">
             <div className="flex items-center gap-2">
               <Leaf className="h-6 w-6 text-green-600 dark:text-green-400" />
-              <p className="text-sm text-slate-600 dark:text-slate-400">© 2025 EnviroVision. All rights reserved.</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400">© 2025 EcoAlert. All rights reserved.</p>
             </div>
             <nav className="flex gap-4 text-sm text-slate-600 dark:text-slate-400">
               <Link href="#" className="hover:underline">

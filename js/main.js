@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("EnviroVision application initialized")
+    console.log("EcoAlert application initialized")
   
   })
   
