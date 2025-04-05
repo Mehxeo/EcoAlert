@@ -72,7 +72,7 @@ def get_environmental_insights():
             return jsonify({"error": "Missing required parameters"}), 400
         
         # Check if we have an API key for OpenAI
-        if OPENAI_API_KEY:
+        if openai.api_key:
             # Generate insights using OpenAI
             insights = generate_ai_environmental_insights(lat, lng, location_name, weather_data)
         else:
