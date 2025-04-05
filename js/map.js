@@ -13,71 +13,72 @@ document.addEventListener("DOMContentLoaded", () => {
     let lat = null
     let long = null
 
-    function getLocation() {
+    function getLocation(callback) {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(success, error);
       } else {
         alert("Geolocation not supported")
       }
     }
-    function success(position) {
+    function success(position, callback) {
       lat = position.coords.latitude
       long =  position.coords.longitude;
       console.log(lat, long)
       const locationName = `Location at ${lat.toFixed(4)}, ${long.toFixed(4)}`
   
       selectLocation(lat, long, locationName);
+      if (callback) callback
     }
     
-    function error() {
+    function error(callback) {
       alert("Sorry, no position available.");
+      if (callback) callback
     }
   
-    initMap()
+    initMap(() => {
+      const saved = localStorage.getItem('lastLocation')
+      if (saved) {
+        const { lat, lng, name } = JSON.parse(saved)
+        selectLocation(lat, lng, name)
+      }
+    })
   
+    
     setupEventListeners()
   
     // make map with Leaflet
-    function initMap() {
-      getLocation()  
+    function initMap(finalCallback) {
       const mapContainer = document.getElementById("map")
-      if (!mapContainer) {
-        console.error("Map container not found")
-        return
-      }
-  
+      if (!mapContainer) return
+    
       if (mapContainer.clientHeight === 0) {
         mapContainer.style.height = "400px"
       }
-  
+    
       setTimeout(() => {
-        try {
-          map = L.map("map", {
-            zoomControl: true,
-            attributionControl: true,
-            fadeAnimation: false,
-            zoomAnimation: false,
-          }).setView([20, 0], 2)
-
-          updateMapStyle()
-          window.map = map
-          window.updateMapStyle = updateMapStyle
-  
-          // Add click event to map
-          map.on("click", (e) => {
-            const { lat, lng } = e.latlng
-
-            const locationName = `Location at ${lat.toFixed(4)}, ${lng.toFixed(4)}`
-  
-            selectLocation(lat, lng, locationName)
+        map = L.map("map", {
+          zoomControl: true,
+          attributionControl: true,
+          fadeAnimation: false,
+          zoomAnimation: false,
+        }).setView([20, 0], 2)
+    
+        updateMapStyle()
+    
+        map.on("click", (e) => {
+          const { lat, lng } = e.latlng
+          const locationName = `Location at ${lat.toFixed(4)}, ${lng.toFixed(4)}`
+          selectLocation(lat, lng, locationName)
+        })
+    
+        setTimeout(() => {
+          map.invalidateSize()
+    
+          // When map is ready, get user location
+          getLocation(() => {
+            if (finalCallback) finalCallback()
           })
-
-          setTimeout(() => {
-            if (map) map.invalidateSize()
-          }, 100)
-        } catch (error) {
-          console.error("Error initializing map:", error)
-        }
+        }, 100)
       }, 100)
     }
   
@@ -206,13 +207,15 @@ document.addEventListener("DOMContentLoaded", () => {
         name: name,
       }
 
+      localStorage.setItem('lastLocation', JSON.stringify(selectedLocation))
       updateMarker()
-
       fetchWeatherAndEnvironmentalData()
     }
   
     function updateMarker() {
-      if (!map) return
+      if (!map){
+        console.warn("Map not ready when trying to add marker.")
+      }
       if (marker) {
         map.removeLayer(marker)
       }
