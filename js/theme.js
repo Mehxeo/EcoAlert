@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Check for saved theme preference or use device preference
     const savedTheme = localStorage.getItem("theme")
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
-  
+    
     // Set initial theme
     if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
       body.classList.add("dark-theme")

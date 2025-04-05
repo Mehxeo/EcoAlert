@@ -47,10 +47,11 @@
   }
   
   body {
+    overflow-x: hidden;
     font-family: "Poppins", sans-serif;
     color: var(--text-color);
     background-color: var(--background-color);
-    background-image: url("../images/background.jpg");
+    /* background-image: url("../images/background.jpg"); */
     background-size: cover;
     background-attachment: fixed;
     background-position: center;
@@ -81,13 +82,22 @@
   
   /* Header & Navigation */
   header {
-    padding: 20px 0;
+    padding: 10px;
+  }
+
+  .main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border-color);
   }
   
   .logo {
     display: flex;
     align-items: center;
     gap: 10px;
+    margin-right: auto;
   }
   
   .logo h1 {
@@ -111,10 +121,12 @@
     display: flex;
     list-style: none;
     align-items: center;
+    margin-left: auto;
+    gap: 30px;
   }
   
   .nav-links li {
-    margin-left: 30px;
+    margin-left: 0;
   }
   
   .nav-links a {
@@ -174,34 +186,58 @@
   /* Main Content */
   main {
     flex: 1;
-    padding: 40px 0;
+    padding: 0;
   }
   
   /* Hero Section */
   .hero {
+    margin: 0;
+    width: 100vw;
+    height: 95vh;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
     margin-bottom: 60px;
+    background: var(--card-bg);
+    background-image: url("../images/herodark.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
   }
   
+  .hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4); /* Adjust opacity here (0.5 = 50%) */
+    z-index: 1;
+  }
+
   .hero-content {
+    position: relative;
+    z-index: 2;
     display: flex;
     flex-direction: column;
     gap: 40px;
-    background: var(--card-bg);
-    border-radius: 10px;
-    box-shadow: var(--shadow);
-    /* height: 600px; */
     padding: 40px;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
   }
   
-  @media (min-width: 768px) {
+  @media (min-width: 400px) {
     .hero-content {
-      flex-direction: row;
+      flex-direction: column;
       align-items: center;
     }
   
     .hero-text {
+      text-align: center;
       flex: 1;
+      color:white
     }
   
     .hero-image {
@@ -213,34 +249,80 @@
       width: 100%;
       height: 100%;
     }
-  }
+  /* } */
   
   .hero-text h1 {
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-    color: var(--primary-color);
-    transition: color 0.3s ease;
+    text-align: center;
+
+    font-style: normal;
+    font-weight: 600;
+    background: linear-gradient(180deg, #177210, #0edf764f);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-wrap: balance;
+    cursor: default;
+    font-size: clamp(20px, 20vw, 350px); /* Responsive font size */
+    line-height: 120%;
+    letter-spacing: -.88px;
+    padding: 0;
+    margin-bottom: 15px;
+    /* text-shadow: 0 0 10px rgba(14, 223, 118, 0.3), 0 0 20px rgba(14, 223, 118, 0.2), 0 0 30px rgba(14, 223, 118, 0.1);
+    animation: glow 2s ease-in-out infinite alternate; */
+  }
+  
+  @keyframes glow {
+    from {
+        text-shadow: 0 0 10px rgba(14, 223, 118, 0.3), 0 0 20px rgba(14, 223, 118, 0.2), 0 0 30px rgba(14, 223, 118, 0.1);
+    }
+    to {
+        text-shadow: 0 0 20px rgba(14, 223, 118, 0.4), 0 0 30px rgba(14, 223, 118, 0.3), 0 0 40px rgba(14, 223, 118, 0.2);
+    }
+}
+  .typewriter-container {
+    display: inline-block;
+  }
+
+  .typed-out {
+    overflow: hidden;
+    border-right: .05em solid #0edf764f;
+    font-size: 1.6rem;
+    width: 0;
+    animation: 
+      typing 1s steps(17, end) forwards,
+      hideCursor 0s 1s forwards;
+  }
+
+  @keyframes hideCursor {
+    to {
+        border-right: none;
+    }
+  }
+  @keyframes typing {
+    from { width: 0 }
+    to {
+      width: 100%;
+    }
   }
   
   .hero-text p {
+    min-width: 500px;
+    max-width: 800px;;
+    justify-self: center;;
     font-size: 1.2rem;
     margin-bottom: 30px;
-  }
-  
-  .hero-image img {
-    width: 100%;
-    border-radius: 8px;
-    box-shadow: var(--shadow);
   }
   
   .cta-button {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     background-color: var(--primary-color);
     color: white;
     padding: 12px 30px;
     border-radius: 30px;
+    margin:10px;
     text-decoration: none;
     font-weight: 500;
     transition: all 0.3s;
@@ -1264,4 +1346,4 @@
     }
   }
   
-  
+}
