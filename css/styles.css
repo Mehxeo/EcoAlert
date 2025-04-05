@@ -1,4 +1,8 @@
 /* Base Variables */
+html {
+  scroll-behavior: smooth;
+}
+
 :root {
     /*Light theme*/
     --primary-color: #2e7d32;
@@ -17,7 +21,7 @@
     --badge-warning: #ff9800;
     --badge-danger: #f44336;
     --badge-info: #2196f3;
-  }
+}
   
  /*Dark theme*/
   .dark-theme {
@@ -48,6 +52,7 @@
   
   body {
     overflow-x: hidden;
+    overflow-y: auto;
     font-family: "Poppins", sans-serif;
     color: var(--text-color);
     background-color: var(--background-color);
@@ -196,7 +201,7 @@
     height: 95vh;
     margin-left: calc(-50vw + 50%);
     margin-right: calc(-50vw + 50%);
-    margin-bottom: 60px;
+    margin-bottom: 100px;
     background: var(--card-bg);
     background-image: url("../images/herodark.jpg");
     background-size: cover;
@@ -253,7 +258,6 @@
   
   .hero-text h1 {
     text-align: center;
-
     font-style: normal;
     font-weight: 600;
     background: linear-gradient(180deg, #177210, #0edf764f);
@@ -267,8 +271,7 @@
     letter-spacing: -.88px;
     padding: 0;
     margin-bottom: 15px;
-    /* text-shadow: 0 0 10px rgba(14, 223, 118, 0.3), 0 0 20px rgba(14, 223, 118, 0.2), 0 0 30px rgba(14, 223, 118, 0.1);
-    animation: glow 2s ease-in-out infinite alternate; */
+    text-shadow: 0 0 10px rgba(14, 223, 118, 0.3), 0 0 20px rgba(14, 223, 118, 0.2), 0 0 30px rgba(14, 223, 118, 0.1);
   }
   
   @keyframes glow {
@@ -290,7 +293,8 @@
     width: 0;
     animation: 
       typing 1s steps(17, end) forwards,
-      hideCursor 0s 1s forwards;
+      hideCursor 0s 1s forwards,
+      glow 2s ease-in-out infinite alternate;
   }
 
   @keyframes hideCursor {
@@ -321,6 +325,7 @@
     background-color: var(--primary-color);
     color: white;
     padding: 12px 30px;
+    border: var(--primary-color) 3px solid;
     border-radius: 30px;
     margin:10px;
     text-decoration: none;
@@ -333,6 +338,15 @@
     background-color: var(--primary-color-dark);
     transform: translateY(-2px);
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .cta-button2 {
+    background-color: transparent;
+    border: silver 3px solid;
+  }
+
+  .cta-button2:hover {
+    background-color: var(--detail-bg);
   }
   
   /* Features Section */
