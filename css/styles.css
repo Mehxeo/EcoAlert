@@ -8,15 +8,15 @@
 }
 :root {
     /*Light theme*/
-    --primary-color: hsl(123, 46%, 34%);
+    --primary-color: #2e7d32;
     --primary-color-dark: #1b5e20;
     --primary-color-light: #81c784;
     --text-color: #263238;
     --text-color-light: #f5f5f5;
     --background-color: #f1f8e9;
-    --card-bg: rgba(255, 255, 255);
+    --card-bg: rgba(255, 255, 255, 0.9);
     --card-bg-solid: #ffffff;
-    --overlay-bg: rgba(241, 248, 233, 0.7);
+    --overlay-bg: rgba(241, 248, 233, 0.9);
     --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     --detail-bg: rgba(255, 255, 255, 0.5);
     --border-color: #e0e0e0;
@@ -34,7 +34,7 @@
     --text-color: #e0e0e0;
     --text-color-light: #f5f5f5;
     --background-color: #1a1a1a;
-    --card-bg: rgba(34, 34, 34);
+    --card-bg: rgba(34, 34, 34, 0.9);
     --card-bg-solid: #222222;
     --overlay-bg: rgba(26, 26, 26, 0.8);
     --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
@@ -523,6 +523,7 @@
     padding: 30px;
     border-radius: 10px;
     box-shadow: var(--shadow);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
   }
   
   .map-container h2 {
@@ -530,24 +531,6 @@
     margin-bottom: 20px;
     color: var(--primary-color);
     transition: color 0.3s ease;
-  }
-
-  .recenter-button {
-    padding: 10px 16px;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: bold;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
-  }
-  
-  .recenter-button:hover {
-    background-color: var(--primary-color-dark);
-    color: white;
   }
   
   .search-form {
@@ -564,7 +547,7 @@
     list-style: none;
     padding: 0;
     margin: 0;
-    gap: 0.5rem;
+    gap: 0.5rem; /* spacing between items */
     justify-content: center;
   }
 
@@ -684,6 +667,7 @@
     border-radius: 10px;
     box-shadow: var(--shadow);
     overflow: hidden;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
   }
 
   .card-header {
@@ -758,6 +742,7 @@
     padding: 10px;
     background: var(--detail-bg);
     border-radius: 5px;
+    transition: background 0.3s ease;
   }
 
   .detail-label {
@@ -1002,33 +987,25 @@
   .pollutants {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 9px;
+    gap: 15px;
   }
 
   .pollutant {
-    padding: 10px;
+    padding: 15px;
     background: var(--card-bg-solid);
     border-radius: 8px;
   }
 
   .pollutant-name {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     opacity: 0.7;
     margin-bottom: 5px;
   }
 
   .pollutant-value {
-    font-size: 1.0rem;
+    font-size: 1.1rem;
     font-weight: 500;
   }
-
-  /* Chart */
-  #aq-chart {
-    margin-top: 20px;
-    border-radius: 8px;
-    padding: 10px;
-  }
-
 
   /* Environmental Insights */
   .risks {
@@ -1275,7 +1252,7 @@
 
   footer {
     padding: 20px 0;
-    margin-top: 20px;
+    margin-top: 20;
     margin-left: calc(-50vw + 50%);
     margin-right: calc(-50vw + 50%);
     width: 100vw;
