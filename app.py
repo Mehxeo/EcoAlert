@@ -424,5 +424,10 @@ def generate_rule_based_response(question, location, weather_data, environmental
                f"The main environmental concern is a {environmental_insights['risks'][0]['level']} risk of {environmental_insights['risks'][0]['type'].lower()}. " \
                f"You can ask me specific questions about the weather forecast, air quality, environmental risks, or sustainability recommendations for this location."
 
+def generate_air_quality_insights(lat, lng):
+    current_url = f"https://air-quality-api.open-meteo.com/v1/air-quality?latitude={lat}&longitude={lng}/&hourly=pm10,pm2_5"
+    current_response = requests.get(current_url)
+    current_data = current_response.json()
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
