@@ -4,14 +4,12 @@ import json
 import random
 from datetime import datetime, timedelta
 import requests
-import openai
 from dotenv import load_dotenv
 load_dotenv()
 
-
 app = Flask(__name__, static_folder='.')
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+GEMINI_API_KEY = "AIzaSyAs8PoGPu-U4dx6MKXkUE-FWVoQnJ3QMXk"
 OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
 
 @app.route("/")
@@ -66,7 +64,7 @@ def get_environmental_insights():
         if not lat or not lng or not location_name:
             return jsonify({"error": "Missing required parameters"}), 400
         
-        if openai.api_key:
+        if GEMINI_API_KEY:
             insights = generate_ai_environmental_insights(lat, lng, location_name, weather_data)
         else:
             insights = generate_mock_environmental_insights(lat, lng, location_name, weather_data)
@@ -88,7 +86,7 @@ def ask_ai():
         if not question or not location or not weather_data or not environmental_insights:
             return jsonify({"error": "Missing required parameters"}), 400
         
-        if openai.api_key:
+        if GEMINI_API_KEY:
             response = generate_ai_response_with_openai(question, location, weather_data, environmental_insights)
         else:
             response = generate_rule_based_response(question, location, weather_data, environmental_insights)
@@ -312,82 +310,136 @@ def generate_mock_environmental_insights(lat, lng, location_name, weather_data):
 
 def generate_ai_environmental_insights(lat, lng, location_name, weather_data):
     try:
-        prompt = f"""
-        Generate environmental insights for the location: {location_name} (Latitude: {lat}, Longitude: {lng}).
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
         
-        Weather data: {json.dumps(weather_data)}
+        prompt = f"""Analyze the environmental conditions for {location_name} (Latitude: {lat}, Longitude: {lng}).
         
-        Please provide the following information in JSON format:
-        1. Environmental risks in the area (flooding, drought, wildfires, etc.)
-        2. Sustainability recommendations specific to this location
-        3. Information about the local ecosystem and biodiversity
+        Current Weather Data:
+        {json.dumps(weather_data, indent=2)}
         
-        Format the response as valid JSON with the following structure:
+        Please provide detailed environmental insights including:
+        1. Main environmental risks and their severity levels
+        2. Local ecosystem characteristics
+        3. Sustainability recommendations
+        4. Air quality impact on health
+        
+        Format the response as a JSON object with the following structure:
         {{
-          "risks": [
-            {{
-              "type": "string",
-              "level": "low|moderate|high|severe",
-              "description": "string"
+            "risks": [
+                {{"type": "risk_type", "level": "low/moderate/high/severe", "description": "detailed description"}},
+                ...
+            ],
+            "localEnvironment": {{
+                "ecosystemType": "type",
+                "characteristics": ["characteristic1", "characteristic2", ...]
+            }},
+            "sustainability": [
+                {{"category": "category_name", "recommendations": ["rec1", "rec2", ...]}},
+                ...
+            ],
+            "healthImpact": {{
+                "airQualityEffects": "description",
+                "recommendations": ["rec1", "rec2", ...]
             }}
-          ],
-          "sustainability": [
-            {{
-              "category": "string",
-              "recommendations": ["string"]
-            }}
-          ],
-          "localEnvironment": {{
-            "ecosystemType": "string",
-            "biodiversity": "string",
-            "conservation": "string",
-            "challenges": ["string"]
-          }}
         }}
         """
         
-        response = openai.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": "You are an environmental science expert. Provide accurate, detailed environmental insights based on location and weather data. Always respond with valid JSON."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.7
-        )
+        headers = {
+            'Content-Type': 'application/json'
+        }
         
-        ai_response = response.choices[0].message.content
-        return json.loads(ai_response)
+        data = {
+            "contents": [{
+                "parts": [{"text": prompt}]
+            }]
+        }
+        
+        response = requests.post(url, headers=headers, json=data)
+        response.raise_for_status()
+        result = response.json()
+        
+        if 'candidates' in result and len(result['candidates']) > 0:
+            text = result['candidates'][0]['content']['parts'][0]['text']
+            insights = json.loads(text)
+            return insights
+        else:
+            raise Exception("No valid response from Gemini API")
+            
     except Exception as e:
-        print(f"Error generating AI insights: {str(e)}")
+        print(f"Error generating AI environmental insights: {str(e)}")
         return generate_mock_environmental_insights(lat, lng, location_name, weather_data)
 
 def generate_ai_response_with_openai(question, location, weather_data, environmental_insights):
     try:
-        prompt = f"""
-        The user is asking about the following location: {location['name']} (Latitude: {location['lat']}, Longitude: {location['lng']}).
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
         
-        Weather data: {json.dumps(weather_data)}
-        Environmental insights: {json.dumps(environmental_insights)}
+        # Format forecast data for the prompt
+        forecast_info = "\nWeather Forecast for the next few days:\n"
+        for day in weather_data['forecast']:
+            forecast_info += f"- {day['date']}: {day['weatherDescription']}, High: {day['maxTemp']}°C, Low: {day['minTemp']}°C\n"
         
-        User question: {question}
+        prompt = f"""You are an environmental and weather expert assistant. Provide accurate, helpful responses based on the provided data.
+
+Location: {location['name']} (Latitude: {location['lat']}, Longitude: {location['lng']})
+
+Current Weather Conditions:
+- Temperature: {weather_data['current']['temperature']}°C
+- Feels Like: {weather_data['current']['feelsLike']}°C
+- Weather: {weather_data['current']['weatherDescription']}
+- Humidity: {weather_data['current']['humidity']}%
+- Wind Speed: {weather_data['current']['windSpeed']} km/h
+- Air Quality: {weather_data['airQuality']['category']}
+
+{forecast_info}
+
+Environmental Conditions:
+- Main Risk: {environmental_insights['risks'][0]['type']} ({environmental_insights['risks'][0]['level']} level)
+- Ecosystem: {environmental_insights['localEnvironment']['ecosystemType']}
+
+User question: "{question}"
+
+Please provide a helpful, informative response that:
+1. Directly answers the user's question
+2. Considers all relevant weather and environmental factors
+3. Provides specific, actionable advice
+4. Explains the reasoning behind your recommendations
+5. Mentions any relevant environmental risks or concerns
+6. If the question is about future weather, use the forecast data to provide specific predictions
+7. For timing questions (like "when will it rain?"), analyze the forecast and provide the most likely time window
+
+IMPORTANT:
+- Do not use asterisks (*) or any special formatting characters
+- Use clear, natural language with proper punctuation
+- Format lists with numbers or bullet points using standard characters
+- Keep the response concise and focused on the user's question
+- Do not include any generic fallback responses
+- Always provide specific, contextual information based on the user's question and the available data"""
         
-        Please provide a helpful, informative response based on the available data. Focus on answering the specific question while providing relevant context from the weather and environmental data.
-        """
+        headers = {
+            'Content-Type': 'application/json'
+        }
         
-        response = openai.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": "You are an environmental and weather expert assistant. Provide accurate, helpful responses based on the provided data."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.7,
-            max_tokens=500
-        )
+        data = {
+            "contents": [{
+                "parts": [{"text": prompt}]
+            }]
+        }
         
-        return response.choices[0].message.content
+        response = requests.post(url, headers=headers, json=data)
+        response.raise_for_status()
+        result = response.json()
+        
+        if 'candidates' in result and len(result['candidates']) > 0:
+            text = result['candidates'][0]['content']['parts'][0]['text']
+            if not text or text.strip() == "":
+                raise Exception("Empty response from Gemini")
+            return text
+        else:
+            raise Exception("No valid response from Gemini API")
+            
     except Exception as e:
         print(f"Error generating AI response: {str(e)}")
-        return generate_rule_based_response(question, location, weather_data, environmental_insights)
+        return f"I apologize, but I encountered an error while processing your question. Please try rephrasing your question or try again later. Error: {str(e)}"
 
 def generate_rule_based_response(question, location, weather_data, environmental_insights):
     q = question.lower()
