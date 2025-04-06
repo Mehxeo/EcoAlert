@@ -10,6 +10,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
     <script src="js/theme.js" defer></script>
     <script src="js/map.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="light-theme">
     <div class="container">
@@ -105,7 +106,6 @@
                                     <span id="air-quality-badge" class="badge">--</span>
                                 </div>
                             </div>
-                            
                         </div>
                     </div>
                 </div>
@@ -171,8 +171,10 @@
                                     <div class="pollutant">
                                         <div class="pollutant-name">Carbon Monoxide (CO)</div>
                                         <div id="co" class="pollutant-value">-- μg/m³</div>
-                                    </div>
-                                </div>
+
+                            </div>
+                            </div>
+                                <canvas id="aq-chart" width="400" height="200"></canvas>
                             </div>
                         </div>
                     </div>

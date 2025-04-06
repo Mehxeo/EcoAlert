@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const btn = L.DomUtil.create('button', 'recenter-button');
           btn.innerHTML = 'Recenter';
           btn.title = 'Go to your location';
-    
+
           L.DomEvent.on(btn, 'click', function (e) {
             L.DomEvent.stopPropagation(e);
             L.DomEvent.preventDefault(e);
@@ -160,9 +160,10 @@ document.addEventListener("DOMContentLoaded", () => {
           customWeatherControl.onAdd = function () {
             const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
             container.style.background = 'white';
+            container.style.color = "black"
             container.style.padding = '8px';
-            container.style.borderRadius = '6px';
-            container.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+            container.style.border = "4px solid hsl(123, 46%, 34%)"
+            
             container.innerHTML = `
               <strong style="font-size: 14px;">Weather Layers</strong><br>
               <select id="weather-layer-select" style="margin-top:5px;">
@@ -508,6 +509,8 @@ document.addEventListener("DOMContentLoaded", () => {
           // Show error toast
           showToast("Error loading data", "Using simulated data due to API error. Please try again later.", "error")
         })
+
+      generateAirQualityInsights(selectedLocation.lat, selectedLocation.lng);
     }
   
     // Generate mock weather data
@@ -990,6 +993,92 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => {
         toast.remove()
       }, 3000)
+    }
+
+    async function generateAirQualityInsights(lat, lng) {
+      const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lng}&hourly=us_aqi,us_aqi_pm2_5,us_aqi_pm10,us_aqi_nitrogen_dioxide,us_aqi_ozone,us_aqi_carbon_monoxide,us_aqi_sulphur_dioxide&current=us_aqi`;
+    
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
+        const data = await response.json();
+    
+        const timeSeries = data.hourly.time.slice(0, 24);
+        const editedTimeSeries = timeSeries.map((isoString) => {
+          const date = new Date(isoString);
+          return date.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+          });
+        });
+        const pm10Series = data.hourly.us_aqi_pm10.slice(0, 24);
+        const pm25Series = data.hourly.us_aqi_pm2_5.slice(0, 24);
+    
+        renderAirQualityChart(editedTimeSeries, pm25Series, pm10Series);
+      } catch (error) {
+        console.error("Error fetching air quality data:", error);
+      }
+    }
+    
+    let airQualityChart; // for managing updates
+    
+    function renderAirQualityChart(timeLabels, pm25, pm10) {
+      const ctx = document.getElementById("aq-chart").getContext("2d");
+    
+      if (airQualityChart) {
+        airQualityChart.destroy(); // Remove old chart if present
+      }
+    
+      airQualityChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: timeLabels,
+          datasets: [
+            {
+              label: 'PM2.5',
+              data: pm25,
+              borderColor: '#ff6384',
+              fill: false,
+              tension: 0.2
+            },
+            {
+              label: 'PM10',
+              data: pm10,
+              borderColor: '#36a2eb',
+              fill: false,
+              tension: 0.2
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Hourly Air Quality: PM2.5 & PM10',
+              font: {
+                size: 18
+              }
+            }
+          },
+          scales: {
+            y: {
+              title: {
+                display: true,
+                text: 'US AQI Value'
+              }
+            },
+            x: {
+              ticks: {
+                maxTicksLimit: 12
+              }
+            }
+          }
+        }
+      });
     }
 
   })
