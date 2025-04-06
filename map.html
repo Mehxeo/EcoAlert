@@ -114,8 +114,10 @@
                     <div class="tab-buttons">
                         <button class="tab-button active" data-tab="forecast">7-Day Forecast</button>
                         <button class="tab-button" data-tab="air-quality">Air Quality</button>
+                        <button class="tab-button" data-tab="flood-risks">Flood Risk</button>
                         <button class="tab-button" data-tab="insights">Environmental Insights</button>
                         <button class="tab-button" data-tab="ask-ai">Ask AI</button>
+
                     </div>
                     
                     <div id="forecast" class="tab-content active">
@@ -171,13 +173,26 @@
                                     <div class="pollutant">
                                         <div class="pollutant-name">Carbon Monoxide (CO)</div>
                                         <div id="co" class="pollutant-value">-- μg/m³</div>
-
-                            </div>
-                            </div>
+                                    </div>
+                                </div>
                                 <canvas id="aq-chart" width="400" height="200"></canvas>
                             </div>
                         </div>
                     </div>
+
+                    <div id="flood-risks" class="tab-content hidden">
+                        <div class="card">
+                          <div class="card-header">
+                            <h3>Flood Risk</h3>
+                            <p>Potential natural floods and their risk levels in this location</p>
+                          </div>
+                          <div class="card-content">
+                            <div id="flood-risks-details">
+                                
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     
                     <div id="insights" class="tab-content hidden">
                         <div class="card">
@@ -187,7 +202,6 @@
                             </div>
                             <div class="card-content">
                                 <div id="environmental-risks" class="risks">
-                                    <!-- Environmental risks will be inserted here by JavaScript -->
                                 </div>
                             </div>
                         </div>
@@ -199,7 +213,6 @@
                             </div>
                             <div class="card-content">
                                 <div id="sustainability-recommendations" class="accordion">
-                                    <!-- Sustainability recommendations will be inserted here by JavaScript -->
                                 </div>
                             </div>
                         </div>
@@ -211,7 +224,6 @@
                             </div>
                             <div class="card-content">
                                 <div id="local-environment" class="local-environment">
-                                    <!-- Local environment info will be inserted here by JavaScript -->
                                 </div>
                             </div>
                         </div>

@@ -1092,7 +1092,7 @@ document.addEventListener("DOMContentLoaded", () => {
       airQualityChart = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: timeLabels,
+          labels: splitLongLabels(timeLabels),
           datasets: [
             {
               label: 'PM2.5',
@@ -1130,14 +1130,29 @@ document.addEventListener("DOMContentLoaded", () => {
             },
             x: {
               ticks: {
-                maxTicksLimit: 12
+                maxTicksLimit: 12,
+                minRotation: 0,
+                maxRotation: 0
               }
             }
           }
         }
       });
     }
-
+    
+    function splitLongLabels(labels){
+      var i = 0, len = labels.length;
+      var splitlabels = labels;
+      while (i < len) {
+          var words = labels[i].trim().split(',');
+          if(words.length>1){
+            for(var j=0; j<words.length; j++){}
+            splitlabels[i] = words;
+          }   
+        i++
+      }
+      return splitlabels;
+  }
   })
   
   
