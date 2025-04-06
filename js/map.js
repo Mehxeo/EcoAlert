@@ -192,7 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
           }
 
           try {
-            const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=10&language=en&format=json`)
+            const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=11&language=en&format=json`)
             
             const data = await response.json();
 
@@ -238,7 +238,8 @@ document.addEventListener("DOMContentLoaded", () => {
           const locationName = `${chosenLocation.name}, ${chosenLocation.admin1}, ${chosenLocation.country}`;
   
           // select the "found" location
-          selectLocation(Lat, Lng, locationName)
+          selectLocation(Lat, Lng, locationName);
+          document.getElementById("tabs-display").style.setProperty("display", "block");
   
           // hide loading indicator
           showLoading(false)

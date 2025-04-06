@@ -3,6 +3,9 @@ html {
   scroll-behavior: smooth;
 }
 
+.hidden {
+  display: none !important;
+}
 :root {
     /*Light theme*/
     --primary-color: #2e7d32;
@@ -242,7 +245,7 @@ html {
     .hero-text {
       text-align: center;
       flex: 1;
-      color:white
+      color:white;
     }
   
     .hero-image {
@@ -291,12 +294,24 @@ html {
     overflow: hidden;
     border-right: .05em solid #0edf764f;
     font-size: 1.6rem;
+    white-space: nowrap;
     width: 0;
     animation: 
       typing 1s steps(17, end) forwards,
       hideCursor 0s 1s forwards,
       glow 2s ease-in-out infinite alternate;
   }
+  
+  .section-text {
+    opacity: 0;
+    transform: translateY(20px);
+    animation-delay: calc(var(--animation-order) * 0.8s);
+  }
+
+.section-text.animate {
+  animation: fadeInUp 0.9s ease forwards;
+  animation-fill-mode: forwards;
+}
 
   @keyframes hideCursor {
     to {
@@ -316,6 +331,9 @@ html {
     justify-self: center;;
     font-size: 1.2rem;
     margin-bottom: 30px;
+    opacity: 0;
+    animation: fadeInUp 1s ease forwards;
+    animation-delay: 0.5s;
   }
   
   .cta-button {
@@ -333,6 +351,9 @@ html {
     font-weight: 500;
     transition: all 0.3s;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    animation: fadeInUp 1s ease forwards;
+    animation-delay: 1.2s;
   }
   
   .cta-button:hover {
@@ -344,12 +365,23 @@ html {
   .cta-button2 {
     background-color: transparent;
     border: silver 3px solid;
+    animation-delay: 1.5s
   }
 
   .cta-button2:hover {
     background-color: var(--detail-bg);
   }
-  
+
+  @keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
   /* Features Section */
   .features {
     padding: 60px 0;
@@ -363,6 +395,9 @@ html {
   .section-header {
     text-align: center;
     margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   
   .section-header h2 {
@@ -370,6 +405,7 @@ html {
     color: var(--primary-color);
     margin-bottom: 15px;
     transition: color 0.3s ease;
+    width: 100%;
   }
   
   .section-header p {
@@ -390,11 +426,22 @@ html {
     border-radius: 10px;
     box-shadow: var(--shadow);
     text-align: center;
-    transition: transform 0.3s, background 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(20px);
+    animation-delay: calc(var(--animation-order) * 0.5s);
+    transition: transform 0.3s ease, background 0.3s ease, opacity 0.3s ease;
+    pointer-events: auto;
+  }
+
+  .feature-card.animate {
+    animation: fadeInUp 0.6s ease forwards;
+    animation-fill-mode: forwards;
   }
   
   .feature-card:hover {
     transform: translateY(-5px);
+    box-shadow: var(--shadow);
   }
   
   .feature-icon {
@@ -500,6 +547,7 @@ html {
     padding: 0;
     margin: 0;
     gap: 0.5rem; /* spacing between items */
+    justify-content: center;
   }
 
 .search-form input {
@@ -1362,3 +1410,4 @@ footer {
     font-size: 0.9rem;
   }
 }
+  }
