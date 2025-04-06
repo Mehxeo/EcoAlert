@@ -3,12 +3,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const cards = document.querySelectorAll('.feature-card');
     const sectText = document.querySelectorAll('.section-text');
-    // Set animation order for each card
     cards.forEach((card, index) => {
         card.style.setProperty('--animation-order', index);
     });
 
-    // Set animation order for each text
     sectText.forEach((text, index) => {
         text.style.setProperty('--animation-order', index);
     });

@@ -8,14 +8,20 @@
     "dev": "python app.py"
   },
   "dependencies": {
+    "chart.js": "^4.4.8",
     "leaflet": "^1.9.4"
   },
-  "devDependencies": {},
   "engines": {
     "node": ">=14.0.0"
   },
   "author": "",
   "license": "MIT",
   "private": true,
-  "keywords": ["environment", "weather", "map", "sustainability", "climate"]
+  "keywords": [
+    "environment",
+    "weather",
+    "map",
+    "sustainability",
+    "climate"
+  ]
 }

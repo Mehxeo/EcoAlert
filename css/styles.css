@@ -8,7 +8,7 @@
 }
 :root {
     /*Light theme*/
-    --primary-color: #2e7d32;
+    --primary-color: hsl(123, 46%, 34%);
     --primary-color-dark: #1b5e20;
     --primary-color-light: #81c784;
     --text-color: #263238;
@@ -522,7 +522,6 @@
     padding: 30px;
     border-radius: 10px;
     box-shadow: var(--shadow);
-    transition: background 0.3s ease, box-shadow 0.3s ease;
   }
   
   .map-container h2 {
@@ -530,6 +529,24 @@
     margin-bottom: 20px;
     color: var(--primary-color);
     transition: color 0.3s ease;
+  }
+
+  .recenter-button {
+    padding: 10px 16px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+  }
+  
+  .recenter-button:hover {
+    background-color: var(--primary-color-dark);
+    color: white;
   }
   
   .search-form {
@@ -546,7 +563,7 @@
     list-style: none;
     padding: 0;
     margin: 0;
-    gap: 0.5rem; /* spacing between items */
+    gap: 0.5rem;
     justify-content: center;
   }
 
@@ -666,7 +683,6 @@
     border-radius: 10px;
     box-shadow: var(--shadow);
     overflow: hidden;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
   }
 
   .card-header {
@@ -741,7 +757,6 @@
     padding: 10px;
     background: var(--detail-bg);
     border-radius: 5px;
-    transition: background 0.3s ease;
   }
 
   .detail-label {
@@ -986,25 +1001,33 @@
   .pollutants {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 15px;
+    gap: 9px;
   }
 
   .pollutant {
-    padding: 15px;
+    padding: 10px;
     background: var(--card-bg-solid);
     border-radius: 8px;
   }
 
   .pollutant-name {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     opacity: 0.7;
     margin-bottom: 5px;
   }
 
   .pollutant-value {
-    font-size: 1.1rem;
+    font-size: 1.0rem;
     font-weight: 500;
   }
+
+  /* Chart */
+  #aq-chart {
+    margin-top: 20px;
+    border-radius: 8px;
+    padding: 10px;
+  }
+
 
   /* Environmental Insights */
   .risks {
