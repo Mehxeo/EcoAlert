@@ -33,9 +33,75 @@
                 </ul>
             </nav>
         </header>
-        <main>
+        <main class="main-content">
             <div>
-                <h1><span class="Eco-Points">EcoPoints</span> Dashboard</h1>
+                <h1 class="fade-in delay-1"><span class="Eco-Points fade-in">EcoPoints</span> Dashboard</h1>
+                <div class="dashboard-container">
+                    <div class="points-and-actions">
+                        <div class="points-card fade-in delay-2">
+                            <div class="points-display">
+                                <span>
+                                    <span>
+                                        <h1>Level 1</h1>
+                                    </span>
+                                    <span class="points-number">0</span>
+                                    <span class="points-label">points</span>
+                                </span>
+                            </div>
+                            <div class="points-progress">
+                                <div class="progress-bar" style="width: 75%"></div>
+                                <span class="progress-text">250 points to next level</span>
+                            </div>
+                        </div>
+                    
+                        <div class="action-card fade-in delay-3">
+                            <h3>Log Environmental Action</h3>
+                            <form id="action-form" class="action-form">
+                                <input type="text" id="action-input" placeholder="What environmental action did you take today?">
+                                <button type="submit" class="submit-action">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                    Add Action
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div class="leaderboard-card fade-in delay-4">
+                        <h3>Community Leaderboard</h3>
+                        <ol class="leaderboard-list">
+                            <li class="leaderboard-item top-player">
+                                <span class="player-name">Sarah K.</span>
+                                <span class="player-points">1,250 pts</span>
+                            </li>
+                            <li class="leaderboard-item">
+                                <span class="player-name">Mike R.</span>
+                                <span class="player-points">980 pts</span>
+                            </li>
+                            <li class="leaderboard-item">
+                                <span class="player-name">Alex T.</span>
+                                <span class="player-points">875 pts</span>
+                            </li>
+                            <li class="leaderboard-item">
+                                <span class="player-name">Andrew T.</span>
+                                <span class="player-points">400 pts</span>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="dashboard-container actions-container">
+                    <h1 class="fade-in delay-5">My Environmental Actions</h1>
+                    <ul class="actions-grid">
+                        <li class="action-item fade-in delay-4">
+                            <div class="action-content">
+                                <span class="action-date">April 6, 2025</span>
+                                <h3>No Actions Yet</h3>
+                                <p>Log Your Environmental Actions</p>
+                                <span class="points-badge"></span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </main>
     </div>

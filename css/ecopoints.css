@@ -1,0 +1,217 @@
+.main-content {
+    border-top: 1px solid var(--border-color);
+}
+
+
+.dashboard-container {
+    display: flex;
+    /* grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); */
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+
+
+.points-and-actions {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.points-card {
+    background: var(--card-bg-solid);
+    width: 100%;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow);
+    text-align: center;
+}
+
+.points-display {
+    margin: 1rem 0;
+    display:flex;
+}
+
+.points-number {
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: hsl(1, 79%, 50%);
+}
+
+.points-label {
+    font-size: 1.2rem;
+    opacity: 0.8;
+    margin-left: 0.5rem;
+}
+
+.points-progress {
+    background: var(--detail-bg);
+    border-radius: 1rem;
+    height: 0.8rem;
+    overflow: hidden;
+    margin-top: 1rem;
+    position: relative;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, #ff8a00, #e52e71);
+    height: 100%;
+    border-radius: 1rem;
+    transition: width 0.3s ease;
+}
+
+.action-card {
+    background: var(--card-bg-solid);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow);
+}
+
+.action-form {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.action-form input {
+    flex: 1;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    background: var(--card-bg);
+    color: var(--text-color);
+}
+
+.submit-action {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    background: hsl(1, 79%, 50%);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.submit-action:hover {
+    transform: translateY(-2px);
+}
+
+.leaderboard-card {
+    background: var(--card-bg-solid);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow);
+}
+.leaderboard-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: leaderboard;
+}
+
+.leaderboard-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+}
+
+.leaderboard-item::before {
+    counter-increment: leaderboard;
+    content: counter(leaderboard);
+    font-weight: bold;
+    width: 2rem;
+    text-align: center;
+}
+
+.player-name {
+    flex: 1;
+    margin-left: 1rem;
+}
+
+.player-points {
+    font-weight: bold;
+    background: linear-gradient(90deg, #e52e71, #ff8a00);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.top-player {
+    background: var(--detail-bg);
+    border-radius: 0.5rem;
+}
+
+.actions-container {
+    display: block;
+}
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    padding: 0;
+    list-style: none;
+    margin-top: 1.5rem;
+    width: 100%;
+}
+
+.action-item {
+    width: 100%;
+    min-width: 300px;
+    background: var(--card-bg);
+    border-radius: 1rem;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.action-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.action-content {
+    padding: 1.5rem;
+}
+
+.action-date {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    opacity: 0.7;
+    margin-bottom: 0.5rem;
+}
+
+.action-item h3 {
+    margin: 0.5rem 0;
+    color: var(--text-color);
+    font-size: 1.2rem;
+}
+
+.action-item p {
+    margin: 0.5rem 0 1rem;
+    color: var(--text-color);
+    opacity: 0.8;
+}
+
+.points-badge {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.section-title {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
