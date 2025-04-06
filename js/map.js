@@ -42,8 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
         selectLocation(lat, lng, name)
       }
     })
-  
-    
+
     setupEventListeners()
 
     function addLegend(layerName) {
@@ -89,6 +88,40 @@ document.addEventListener("DOMContentLoaded", () => {
         }).setView([20, 0], 2)
     
         updateMapStyle()
+
+        const recenterControl = L.control({ position: 'bottomright' });
+
+        recenterControl.onAdd = function (map) {
+          const btn = L.DomUtil.create('button', 'recenter-button');
+          btn.innerHTML = 'Recenter';
+          btn.title = 'Go to your location';
+    
+          L.DomEvent.on(btn, 'click', function (e) {
+            L.DomEvent.stopPropagation(e);
+            L.DomEvent.preventDefault(e);
+    
+            if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                  const lat = pos.coords.latitude;
+                  const lng = pos.coords.longitude;
+                  const locationName = `Location at ${lat.toFixed(4)}, ${long.toFixed(4)}`;
+
+                  selectLocation(lat, lng, locationName);
+                },
+                () => {
+                  alert("Unable to retrieve your location.");
+                }
+              );
+            } else {
+              alert("Geolocation not supported.");
+            }
+          });
+    
+          return btn;
+        };
+  
+        recenterControl.addTo(map);
     
         map.on("click", (e) => {
           const { lat, lng } = e.latlng
@@ -123,8 +156,60 @@ document.addEventListener("DOMContentLoaded", () => {
           Object.entries(weatherBaseLayers).forEach(([name, layer]) => {
             layer.on("add", () => addLegend(name))
           })
+          const customWeatherControl = L.control({ position: 'topright' });
 
-          L.control.layers(weatherBaseLayers, null, { collapsed: false }).addTo(map)
+          customWeatherControl.onAdd = function () {
+            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+            container.style.background = 'white';
+            container.style.padding = '8px';
+            container.style.borderRadius = '6px';
+            container.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+            container.innerHTML = `
+              <strong style="font-size: 14px;">Weather Layers</strong><br>
+              <select id="weather-layer-select" style="margin-top:5px;">
+                <option value="">None</option>
+                <option value="Clouds">Clouds</option>
+                <option value="Precipitation">Precipitation</option>
+                <option value="Pressure">Pressure</option>
+                <option value="Wind">Wind</option>
+                <option value="Temperature">Temperature</option>
+              </select>
+            `;
+          
+            L.DomEvent.disableClickPropagation(container);
+            return container;
+          };
+          
+          customWeatherControl.addTo(map);
+
+          const weatherLayers = {
+            Clouds: weatherBaseLayers.Clouds,
+            Precipitation: weatherBaseLayers.Precipitation,
+            Pressure: weatherBaseLayers.Pressure,
+            Wind: weatherBaseLayers.Wind,
+            Temperature: weatherBaseLayers.Temperature,
+          };
+          
+          let currentWeatherLayer = weatherBaseLayers.Temperature; // if Temperature is default
+          document.getElementById("weather-layer-select").value = "Temperature";
+          
+          document.getElementById("weather-layer-select").addEventListener("change", (e) => {
+            const selected = e.target.value;
+          
+            if (currentWeatherLayer) {
+              map.removeLayer(currentWeatherLayer);
+              currentWeatherLayer = null;
+            }
+          
+            if (selected && weatherLayers[selected]) {
+              currentWeatherLayer = weatherLayers[selected];
+              currentWeatherLayer.addTo(map);
+              addLegend(selected);
+            } else if (window.legendControl) {
+              map.removeControl(window.legendControl);
+            }
+          });
+          
           map.invalidateSize()
     
           // When map is ready, get user location
@@ -133,6 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
           })
         }, 100)
       }, 100)
+
     }
   
     function updateMapStyle() {
@@ -851,12 +937,9 @@ document.addEventListener("DOMContentLoaded", () => {
         })
     }
   
-    // Generate an AI response based on the question and data (fallback if API fails)
     function generateAIResponse(question, weatherData, environmentalInsights) {
-      // Convert question to lowercase for easier matching
       const q = question.toLowerCase()
   
-      // Weather forecast related questions
       if (
         q.includes("weather") ||
         q.includes("forecast") ||
@@ -871,8 +954,7 @@ document.addEventListener("DOMContentLoaded", () => {
         The forecast for the next few days shows temperatures ranging from ${getTemperatureInCurrentUnit(weatherData.forecast[0].minTemp)}°${unit} to ${getTemperatureInCurrentUnit(weatherData.forecast[3].maxTemp)}°${unit}, 
         with conditions varying from ${weatherData.forecast[0].weatherDescription.toLowerCase()} to ${weatherData.forecast[3].weatherDescription.toLowerCase()}.`
       }
-  
-      // Environmental risks related questions
+
       else if (q.includes("risk") || q.includes("danger") || q.includes("hazard") || q.includes("threat")) {
         const highestRisk = environmentalInsights.risks.sort((a, b) => {
           const levels = { low: 0, moderate: 1, high: 2, severe: 3 }
@@ -883,7 +965,6 @@ document.addEventListener("DOMContentLoaded", () => {
         Other risks include ${environmentalInsights.risks[1].type.toLowerCase()} (${environmentalInsights.risks[1].level}) and ${environmentalInsights.risks[2].type.toLowerCase()} (${environmentalInsights.risks[2].level}).`
       }
   
-      // Sustainability related questions
       else if (
         q.includes("sustainability") ||
         q.includes("sustainable") ||
@@ -902,7 +983,6 @@ document.addEventListener("DOMContentLoaded", () => {
         These practices are particularly important in this area due to the ${environmentalInsights.localEnvironment.ecosystemType.toLowerCase()} ecosystem and the ${environmentalInsights.risks[0].level} risk of ${environmentalInsights.risks[0].type.toLowerCase()}.`
       }
   
-      // Air quality related questions
       else if (q.includes("air") || q.includes("pollution") || q.includes("quality") || q.includes("breathe")) {
         return `The current air quality in ${weatherData.location} is categorized as "${weatherData.airQuality.category}". 
         The Air Quality Index (AQI) is ${weatherData.airQuality.aqi}, with PM2.5 levels at ${weatherData.airQuality.pm25} μg/m³ and PM10 at ${weatherData.airQuality.pm10} μg/m³. 
@@ -917,7 +997,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }`
       }
   
-      // Biodiversity and ecosystem related questions
       else if (
         q.includes("ecosystem") ||
         q.includes("biodiversity") ||
@@ -931,7 +1010,6 @@ document.addEventListener("DOMContentLoaded", () => {
         However, this ecosystem faces challenges including ${environmentalInsights.localEnvironment.challenges[0].toLowerCase()} and ${environmentalInsights.localEnvironment.challenges[1].toLowerCase()}.`
       }
   
-      // General or unrecognized questions
       else {
         return `Based on the environmental data for ${weatherData.location}, I can tell you that the current temperature is ${getTemperatureInCurrentUnit(weatherData.current.temperature)}°${useMetric ? "C" : "F"} with ${weatherData.current.weatherDescription.toLowerCase()} conditions. 
         The air quality is ${weatherData.airQuality.category.toLowerCase()}, and the area has a ${environmentalInsights.localEnvironment.ecosystemType.toLowerCase()} ecosystem.
@@ -941,15 +1019,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   
-    // Show toast notification
     function showToast(title, message, type = "info") {
       const toastContainer = document.getElementById("toast-container")
   
-      // Create toast element
       const toast = document.createElement("div")
       toast.className = `toast toast-${type}`
   
-      // Set icon based on type
       let iconSvg = ""
       switch (type) {
         case "success":
@@ -972,18 +1047,14 @@ document.addEventListener("DOMContentLoaded", () => {
           <div>${message}</div>
         </div>
       `
-  
-      // Add toast to container
+
       toastContainer.appendChild(toast)
   
-      // Remove toast after 3 seconds
       setTimeout(() => {
         toast.remove()
       }, 3000)
     }
-  
-    // Declare L here to avoid undefined variable error
-    const L = window.L
+
   })
   
   
