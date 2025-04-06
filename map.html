@@ -3,20 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Explore Map - EcoAlert</title>
+    <title>EnviroVision - Interactive Map</title>
     <link rel="stylesheet" href="css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
     <script src="js/theme.js" defer></script>
     <script src="js/map.js" defer></script>
+    <script src="js/main.js" defer></script>
+    <!-- Firebase SDK -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+    <script type="module" src="firebase/firebaseconfig.js"></script>
+    <script type="module" src="js/firestore.js"></script>
+    <script type="module" src="js/auth.js"></script>
+    <style>
+        .auth-container {
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+        }
+        .sign-in-button {
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+        .sign-in-button:hover {
+            background-color: #357ABD;
+        }
+        .sign-in-button img {
+            margin-right: 8px;
+            width: 18px;
+            height: 18px;
+        }
+        .sign-out-button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .sign-out-button:hover {
+            background-color: #d32f2f;
+        }
+        .user-info {
+            display: none;
+            align-items: center;
+        }
+        .user-photo {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .user-details {
+            display: flex;
+            flex-direction: column;
+        }
+        .user-name {
+            font-weight: 500;
+        }
+        .user-email {
+            font-size: 0.8rem;
+            color: #666;
+        }
+    </style>
 </head>
 <body class="light-theme">
     <div class="container">
         <header>
             <div class="logo">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
-                <h1>EcoAlert</h1>
+                <h1>EnviroVision</h1>
             </div>
             <nav>
                 <ul class="nav-links">
@@ -28,231 +96,72 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="moon-icon" style="display: none;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
                         </button>
                     </li>
+                    <li class="auth-container">
+                        <!-- Sign In Button -->
+                        <button id="sign-in-button" class="sign-in-button">
+                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo">
+                            Sign in with Google
+                        </button>
+                        
+                        <!-- Sign Out Button (hidden by default) -->
+                        <button id="sign-out-button" class="sign-out-button" style="display: none;">
+                            Sign Out
+                        </button>
+                        
+                        <!-- User Info (hidden by default) -->
+                        <div id="user-info" class="user-info" style="display: none;">
+                            <img id="user-photo" class="user-photo" src="" alt="User Photo">
+                            <div class="user-details">
+                                <span id="user-name" class="user-name"></span>
+                                <span id="user-email" class="user-email"></span>
+                            </div>
+                        </div>
+                    </li>
                 </ul>
             </nav>
         </header>
 
-        <main class="map-page">
-            <div class="map-container">
-                <h2>Select Location for Environmental Analysis</h2>
-                
-                <form id="search-form" class="search-form">
-                    <input type="text" id="location-input" placeholder="Search for a location...">
-                    <button type="submit" id="search-button">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                        Search
-                    </button>
-                </form>
-                
-                <div id="map" class="map" style="height: 400px; width: 100%;"></div>
-                
-                <p class="map-instruction">Click on the map to select a location or use the search bar above</p>
-            </div>
-
-            <div id="loading-indicator" class="loading-indicator hidden">
-                <div class="spinner"></div>
-                <p>Loading data...</p>
-            </div>
-
-            <div id="weather-data" class="weather-data hidden">
-                <div class="card location-card">
-                    <div class="card-header">
-                        <h3 id="location-name">Location Name</h3>
-                        <p id="location-coordinates">Lat: 0.0000, Lng: 0.0000</p>
-                        <div class="unit-toggle">
-                            <label class="switch">
-                                <input type="checkbox" id="unit-toggle">
-                                <span class="slider round"></span>
-                            </label>
-                            <span id="unit-label">°C</span>
+        <main>
+            <section class="map-section">
+                <div class="map-container">
+                    <div id="map"></div>
+                    <div class="map-controls">
+                        <div class="search-box">
+                            <input type="text" id="location-search" placeholder="Search location...">
+                            <button id="search-button">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            </button>
+                        </div>
+                        <div class="layer-controls">
+                            <button id="toggle-weather" class="layer-button active">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+                                Weather
+                            </button>
+                            <button id="toggle-air-quality" class="layer-button">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg>
+                                Air Quality
+                            </button>
+                            <button id="toggle-water" class="layer-button">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"></path></svg>
+                                Water Resources
+                            </button>
                         </div>
                     </div>
-                    <div class="card-content">
-                        <div class="current-weather">
-                            <div class="weather-main">
-                                <img id="weather-icon" src="/placeholder.svg" alt="Weather icon">
-                                <div class="temperature">
-                                    <span id="current-temp">--</span><span id="temp-unit">°C</span>
-                                </div>
-                                <p id="weather-description">Weather description</p>
-                                <p>Feels like <span id="feels-like">--</span><span id="feels-like-unit">°C</span></p>
-                            </div>
-                            
-                            <div class="weather-details">
-                                <div class="detail">
-                                    <span class="detail-label">Humidity</span>
-                                    <span id="humidity">--%</span>
-                                </div>
-                                <div class="detail">
-                                    <span class="detail-label">Wind</span>
-                                    <span id="wind-speed">-- km/h</span>
-                                </div>
-                                <div class="detail">
-                                    <span class="detail-label">Pressure</span>
-                                    <span id="pressure">-- hPa</span>
-                                </div>
-                                <div class="detail">
-                                    <span class="detail-label">UV Index</span>
-                                    <span id="uv-index">--</span>
-                                </div>
-                                <div class="detail">
-                                    <span class="detail-label">Visibility</span>
-                                    <span id="visibility">-- km</span>
-                                </div>
-                                <div class="detail">
-                                    <span class="detail-label">Air Quality</span>
-                                    <span id="air-quality" class="badge">--</span>
-                                </div>
-                            </div>
+                    <div class="location-info">
+                        <h2>Location Information</h2>
+                        <div class="info-content">
+                            <p>Select a location on the map to view environmental data.</p>
                         </div>
                     </div>
                 </div>
-
-                <div class="tabs">
-                    <div class="tab-buttons">
-                        <button class="tab-button active" data-tab="forecast">7-Day Forecast</button>
-                        <button class="tab-button" data-tab="air-quality">Air Quality</button>
-                        <button class="tab-button" data-tab="insights">Environmental Insights</button>
-                        <button class="tab-button" data-tab="ask-ai">Ask AI</button>
-                    </div>
-                    
-                    <div id="forecast" class="tab-content active">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3>7-Day Weather Forecast</h3>
-                            </div>
-                            <div class="card-content">
-                                <div class="forecast-days" id="forecast-days">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div id="air-quality" class="tab-content">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3>Air Quality Information</h3>
-                                <p>Current air quality index and pollutant levels</p>
-                            </div>
-                            <div class="card-content">
-                                <div class="air-quality-main">
-                                    <div class="aqi-display">
-                                        <div id="aqi-value" class="aqi-value">--</div>
-                                        <div id="aqi-category" class="badge">--</div>
-                                    </div>
-                                    <div class="aqi-description">
-                                        <p id="aqi-text">Air quality information will appear here.</p>
-                                    </div>
-                                </div>
-                                
-                                <div class="pollutants">
-                                    <div class="pollutant">
-                                        <div class="pollutant-name">PM2.5</div>
-                                        <div id="pm25" class="pollutant-value">-- μg/m³</div>
-                                    </div>
-                                    <div class="pollutant">
-                                        <div class="pollutant-name">PM10</div>
-                                        <div id="pm10" class="pollutant-value">-- μg/m³</div>
-                                    </div>
-                                    <div class="pollutant">
-                                        <div class="pollutant-name">Ozone (O₃)</div>
-                                        <div id="o3" class="pollutant-value">-- μg/m³</div>
-                                    </div>
-                                    <div class="pollutant">
-                                        <div class="pollutant-name">Nitrogen Dioxide (NO₂)</div>
-                                        <div id="no2" class="pollutant-value">-- μg/m³</div>
-                                    </div>
-                                    <div class="pollutant">
-                                        <div class="pollutant-name">Sulfur Dioxide (SO₂)</div>
-                                        <div id="so2" class="pollutant-value">-- μg/m³</div>
-                                    </div>
-                                    <div class="pollutant">
-                                        <div class="pollutant-name">Carbon Monoxide (CO)</div>
-                                        <div id="co" class="pollutant-value">-- μg/m³</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div id="insights" class="tab-content">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3>Environmental Risks</h3>
-                                <p>Potential environmental hazards in this location</p>
-                            </div>
-                            <div class="card-content">
-                                <div id="environmental-risks" class="risks">
-                                    <!-- Environmental risks will be inserted here by JavaScript -->
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="card">
-                            <div class="card-header">
-                                <h3>Sustainability Recommendations</h3>
-                                <p>AI-generated suggestions for improving environmental sustainability</p>
-                            </div>
-                            <div class="card-content">
-                                <div id="sustainability-recommendations" class="accordion">
-                                    <!-- Sustainability recommendations will be inserted here by JavaScript -->
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="card">
-                            <div class="card-header">
-                                <h3>Local Environment</h3>
-                                <p>Information about the local ecosystem and biodiversity</p>
-                            </div>
-                            <div class="card-content">
-                                <div id="local-environment" class="local-environment">
-                                    <!-- Local environment info will be inserted here by JavaScript -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div id="ask-ai" class="tab-content">
-                        <div class="card">
-                            <div class="card-header">
-                                <h3>Ask AI About This Location</h3>
-                                <p>Get personalized insights about weather, environment, and sustainability</p>
-                            </div>
-                            <div class="card-content">
-                                <div class="chat-container">
-                                    <div id="chat-messages" class="chat-messages">
-                                        <div class="message system-message">
-                                            <p>Hello! I'm your environmental AI assistant. Ask me anything about the weather, environmental conditions, or sustainability recommendations for this location.</p>
-                                        </div>
-                                    </div>
-                                    <form id="chat-form" class="chat-input">
-                                        <input type="text" id="chat-input" placeholder="Ask a question about this location...">
-                                        <button type="submit" id="chat-submit">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                                        </button>
-                                    </form>
-                                </div>
-                                <div class="chat-suggestions">
-                                    <p>Suggested questions:</p>
-                                    <div class="suggestion-buttons">
-                                        <button class="suggestion-button" data-question="What are the main environmental risks in this area?">Environmental risks</button>
-                                        <button class="suggestion-button" data-question="How will the weather change in the next few days?">Weather forecast</button>
-                                        <button class="suggestion-button" data-question="What sustainability practices are recommended for this location?">Sustainability tips</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            </section>
         </main>
 
         <footer>
             <div class="footer-content">
                 <div class="footer-logo">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
-                    <p>© 2025 EcoAlert. All rights reserved.</p>
+                    <p>© 2025 EnviroVision. All rights reserved.</p>
                 </div>
                 <nav class="footer-links">
                     <a href="#">Terms</a>
@@ -262,9 +171,9 @@
             </div>
         </footer>
     </div>
-
-    <!-- Toast notification system -->
-    <div id="toast-container" class="toast-container"></div>
+    <!-- Custom Scripts -->
+    <script type="module" src="js/map.js"></script>
+    <script type="module" src="js/auth.js"></script>
 </body>
 </html>
 

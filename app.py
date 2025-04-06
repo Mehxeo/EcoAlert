@@ -5,6 +5,7 @@ import random
 from datetime import datetime, timedelta
 import requests
 import openai
+<<<<<<< HEAD
 from dotenv import load_dotenv
 
 load_dotenv()  # Load environment variables from .env file
@@ -14,6 +15,19 @@ app = Flask(__name__, static_folder='.')
 # Configure API clients
 openai.api_key = os.getenv('OPENAI_API_KEY')
 OPENWEATHER_API_KEY = os.getenv('OPENWEATHER_API_KEY')
+=======
+
+app = Flask(__name__, static_folder='.')
+
+# Set API keys using environment variables (more secure)
+# In production, set these using your hosting platform's environment variables
+# For local development, you can use a .env file (not included in version control)
+OPENWEATHER_API_KEY = os.environ.get("OPENWEATHER_API_KEY", "6e7d8474db20a0cf8e9094f00fab8a6c")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "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")
+
+# Configure OpenAI client
+openai.api_key = OPENAI_API_KEY
+>>>>>>> 0d0822879de393d1e3928131770aa7efce43ecaf
 
 # ... (keep your existing routes until get_weather)
 
@@ -382,4 +396,13 @@ def generate_rule_based_response(question, location, weather_data, environmental
                f"You can ask me specific questions about the weather forecast, air quality, environmental risks, or sustainability recommendations for this location."
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+    # For local development, you can set environment variables here
+    # DO NOT use this in production - use proper environment variable configuration
+    if not os.environ.get("OPENWEATHER_API_KEY"):
+        os.environ["OPENWEATHER_API_KEY"] = ""  # Add your key here for testing only
+    
+    if not os.environ.get("OPENAI_API_KEY"):
+        os.environ["OPENAI_API_KEY"] = ""  # Add your key here for testing only
+    
+    app.run(debug=True, port=5001)
+
