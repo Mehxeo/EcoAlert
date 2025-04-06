@@ -21,6 +21,14 @@ def home():
 def map_page():
     return send_from_directory('.', 'map.html')
 
+@app.route('/signin.html')
+def signin_page():
+    return send_from_directory('.', 'signin.html')
+
+@app.route('/ecopoints.html')
+def ecopoints_page():
+    return send_from_directory('.', 'ecopoints.html')
+
 @app.route('/css/<path:path>')
 def send_css(path):
     return send_from_directory('css', path)
