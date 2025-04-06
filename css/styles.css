@@ -98,7 +98,6 @@
       justify-content: space-between;
       align-items: center;
       padding: 5px 0;
-      border-bottom: 1px solid var(--border-color);
     }
     
     .logo {
@@ -199,6 +198,7 @@
     
     /* Hero Section */
     .hero {
+      border-top: 1px solid var(--border-color);
       margin: 0;
       width: 100vw;
       height: 95vh;
@@ -266,6 +266,7 @@
     background: linear-gradient(180deg, #177210, #0edf764f);
     background-clip: text;
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     text-wrap: balance;
     cursor: default;
@@ -1391,6 +1392,19 @@
     }
   }
 
+  .Eco-Alert {
+    background: linear-gradient(90deg, var(--primary-color-light), var(--primary-color-dark));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .Eco-Points {
+    background: linear-gradient(90deg, #ff8a00, #e52e71);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
   /* ====================================================
     Responsive Adjustments
   ==================================================== */
