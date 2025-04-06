@@ -85,6 +85,24 @@
 .delay-9 {animation-delay: 1.8s;}
 .delay-10 {animation-delay: 2s;}
 
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.avatar-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary-color);
+}
+
+.hidden {
+  display: none;
+}
+
 @keyframes fadeInUp {
   from {
       opacity: 0;

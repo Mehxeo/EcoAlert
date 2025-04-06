@@ -1,14 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
-
-    function animateContainers(element, newValue) {
-        element.classList.remove('fade-in');
-        element.classList.add('fade-out');
-
-        setTimeout(() => {
-            element.innerHTML = newValue;
-            element.classList.remove('fade-out');
-            element.classList.add('fade-in');
-        }
-        , 500);
+    if (localStorage.getItem('user')) {
+        const userString = localStorage.getItem('user');
+        const user = JSON.parse(userString);
+        document.getElementById('sign-in').textContent = user.name;
     }
 });
