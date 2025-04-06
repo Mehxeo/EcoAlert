@@ -41,6 +41,31 @@ document.addEventListener("DOMContentLoaded", async () => {
                 actionsElement.insertBefore(li, actionsElement.firstChild);
             });
         }
+
+        const leaderboardElement = document.querySelector('.leaderboard-list');
+        const leaderboard = [
+            { name: 'Ben K.', points: 1250 },
+            { name: 'Utsav D.', points: 980 },
+            { name: 'Himesh A.', points: 875 },
+            { name: user.name, points: user.points || 0 } // Add the current user
+        ];
+
+        // Sort leaderboard by points in descending order
+        leaderboard.sort((a, b) => b.points - a.points);
+
+        // Clear existing leaderboard
+        leaderboardElement.innerHTML = '';
+
+        // Populate sorted leaderboard
+        leaderboard.forEach((player, index) => {
+            const li = document.createElement('li');
+            li.className = `leaderboard-item ${index === 0 ? 'top-player' : ''}`;
+            li.innerHTML = `
+                <span class="player-name">${player.name}</span>
+                <span class="player-points">${player.points} pts</span>
+            `;
+            leaderboardElement.appendChild(li);
+        });
     }
     } catch (error) {
         console.error("Error fetching user data:", error);
