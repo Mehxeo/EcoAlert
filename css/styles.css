@@ -23,6 +23,7 @@
     --badge-success: #4caf50;
     --badge-warning: #ff9800;
     --badge-danger: #f44336;
+    --badge-severe: #8b0000;
     --badge-info: #2196f3;
 }
   
@@ -985,6 +986,11 @@
     color: white;
   }
 
+  #aqi-category {
+    width: 100%;
+    text-align: center;
+  }
+
   /* Pollutants */
   .pollutants {
     display: grid;
@@ -1059,7 +1065,7 @@
   }
 
   .badge-severe {
-    background-color: #8b0000;
+    background-color: var(--badge-severe);
     color: white;
   }
 
@@ -1124,8 +1130,18 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
+    padding: 20px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px var(--shadow);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
   }
-
+  
+  .local-environment:hover {
+    box-shadow: 0 6px 12px var(--shadow);
+  }
+  
   .environment-section {
     padding: 15px;
     background: var(--card-bg-solid);
@@ -1147,6 +1163,73 @@
     margin-bottom: 8px;
   }
 
+/* Flood Risks Grid */
+.flood-risks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  background-color: var(--background);
+  border-radius: 8px;
+}
+
+/* Flood Risk Item */
+.flood-risk-item {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 15px;
+  background-color: var(--card-bg);
+  box-shadow: 0 4px 8px var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.flood-risk-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px var(--shadow);
+}
+
+/* Flood Risk Item Header */
+.flood-risk-item h4 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  color: var(--text-color);
+  font-weight: bold;
+}
+
+/* Flood Risk Item Text */
+.flood-risk-item p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: var(--text-color);
+  line-height: 1.5;
+}
+
+/* Badge Styles */
+.flood-risk-item .badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.badge-low {
+  background-color: var(--badge-success);
+}
+
+.badge-moderate {
+  background-color: var(--badge-warning);
+}
+
+.badge-high {
+  background-color: var(--badge-danger);
+}
+
+.badge-severe {
+  background-color: var(--badge-severe);
+}
   /* ====================================================
     Chat Interface
   ==================================================== */
@@ -1233,6 +1316,23 @@
   }
 
   .chat-input button:hover {
+    background-color: var(--primary-color-dark);
+  }
+
+  .recenter-button {
+    padding: 10px 16px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+  }
+  
+  .recenter-button:hover {
     background-color: var(--primary-color-dark);
   }
 
