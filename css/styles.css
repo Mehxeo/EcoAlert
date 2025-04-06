@@ -986,6 +986,11 @@
     color: white;
   }
 
+  #aqi-category {
+    width: 100%;
+    text-align: center;
+  }
+
   /* Pollutants */
   .pollutants {
     display: grid;
