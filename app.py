@@ -5,12 +5,41 @@ import random
 from datetime import datetime, timedelta
 import requests
 from dotenv import load_dotenv
+
+print("\nLoading environment variables...")
 load_dotenv()
 
-app = Flask(__name__, static_folder='.')
+# Load API keys with explicit error handling
+try:
+    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+    OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
+    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+    
+    print("\nEnvironment variables loaded:")
+    print(f"GEMINI_API_KEY: {'Set' if GEMINI_API_KEY else 'Not set'}")
+    print(f"OPENWEATHER_API_KEY: {'Set' if OPENWEATHER_API_KEY else 'Not set'}")
+    print(f"OPENAI_API_KEY: {'Set' if OPENAI_API_KEY else 'Not set'}")
+    
+    if not GEMINI_API_KEY:
+        print("WARNING: GEMINI_API_KEY is not set. AI features will use mock data.")
+    if not OPENWEATHER_API_KEY:
+        print("WARNING: OPENWEATHER_API_KEY is not set. Weather data will be mock.")
+except Exception as e:
+    print(f"Error loading environment variables: {str(e)}")
+    GEMINI_API_KEY = None
+    OPENWEATHER_API_KEY = None
+    OPENAI_API_KEY = None
 
-GEMINI_API_KEY = "AIzaSyAs8PoGPu-U4dx6MKXkUE-FWVoQnJ3QMXk"
-OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
+Flooding = "Nothing"
+Drought = "Nothing"
+AirPollution = "Nothing"
+Biodiversity = "Nothing"
+EcoSystemType = "Nothing"
+ConservationEfforts = "Nothing"
+EnviormentalChallenges1 = "Nothing"
+EnviormentalChallenges2 = "Nothing"
+EnviormentalChallenges3 = "Nothing"
+app = Flask(__name__, static_folder='.')
 
 @app.route("/")
 @app.route('/index.html')
@@ -20,6 +49,14 @@ def home():
 @app.route('/map.html')
 def map_page():
     return send_from_directory('.', 'map.html')
+
+@app.route('/signin.html')
+def signin_page():
+    return send_from_directory('.', 'signin.html')
+
+@app.route('/ecopoints.html')
+def ecopoints_page():
+    return send_from_directory('.', 'ecopoints.html')
 
 @app.route('/css/<path:path>')
 def send_css(path):
@@ -45,7 +82,7 @@ def get_weather():
         if OPENWEATHER_API_KEY:
             weather_data = get_real_weather_data(float(lat), float(lng))
         else:
-            weather_data = generate_mock_weather_data(float(lat), float(lng))
+            print(f"Error occured when grabbing data")
             
         return jsonify(weather_data)
     except Exception as e:
@@ -310,64 +347,205 @@ def generate_mock_environmental_insights(lat, lng, location_name, weather_data):
     }
 
 def generate_ai_environmental_insights(lat, lng, location_name, weather_data):
+    """Generate environmental insights using Gemini API"""
     try:
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
+        # Check if Gemini API key is set
+        if not GEMINI_API_KEY:
+            print("Warning: GEMINI_API_KEY not set, using mock data")
+            return generate_mock_environmental_insights(lat, lng, location_name, weather_data)
         
-        prompt = f"""Analyze the environmental conditions for {location_name} (Latitude: {lat}, Longitude: {lng}).
+        # Get additional environmental data
+        air_quality_data = get_air_quality_data(lat, lng)
+        elevation_data = get_elevation_data(lat, lng)
+        land_cover_data = get_land_cover_data(lat, lng)
         
-        Current Weather Data:
-        {json.dumps(weather_data, indent=2)}
+        # Check if it's currently raining
+        is_raining = weather_data.get('rain', {}).get('1h', 0) > 0 or weather_data.get('rain', {}).get('3h', 0) > 0
         
-        Please provide detailed environmental insights including:
-        1. Main environmental risks and their severity levels
-        2. Local ecosystem characteristics
-        3. Sustainability recommendations
-        4. Air quality impact on health
+        # Structure the environmental data
+        environmental_data = {
+            "location": {
+                "name": location_name,
+                "coordinates": {"lat": lat, "lng": lng},
+                "elevation": elevation_data.get("elevation", 0),
+                "land_cover": land_cover_data.get("type", "Unknown"),
+                "is_coastal": land_cover_data.get("is_coastal", False)
+            },
+            "current_conditions": {
+                "temperature": weather_data.get("current", {}).get("temperature", 0),
+                "humidity": weather_data.get("current", {}).get("humidity", 0),
+                "weather": weather_data.get("current", {}).get("weatherDescription", "Unknown"),
+                "rain_probability": weather_data.get("current", {}).get("precipitation", 0),
+                "wind_speed": weather_data.get("current", {}).get("windSpeed", 0),
+                "air_quality": {
+                    "aqi": air_quality_data.get("aqi", 0),
+                    "pm25": air_quality_data.get("pm25", 0),
+                    "components": air_quality_data.get("components", {})
+                },
+                "is_raining": is_raining
+            },
+            "biodiversity": land_cover_data.get("biodiversity", {})
+        }
+        
+        print("\nSending data to Gemini API:")
+        print(json.dumps(environmental_data, indent=2))
+        
+        prompt = f"""
+        Analyze the following environmental data and generate insights about environmental risks and sustainability recommendations.
+        Focus on three main risk categories: Flooding, Drought, and Air Pollution.
+        
+        Environmental Data:
+        {json.dumps(environmental_data, indent=2)}
+        
+        Risk Assessment Rules:
+        1. Flooding Risk:
+           - High: Rain probability > 70% AND high humidity
+           - Moderate: Rain probability > 40% OR high humidity
+           - Low: Rain probability < 40% AND normal humidity
+        
+        2. Drought Risk:
+           - High: Low humidity AND high temperature
+           - Moderate: Low humidity OR high temperature
+           - Low: Normal humidity AND temperature OR if it's currently raining
+        
+        3. Air Pollution Risk:
+           - High: AQI > 150 OR PM2.5 > 35
+           - Moderate: AQI > 100 OR PM2.5 > 25
+           - Low: AQI < 100 AND PM2.5 < 25
         
         Format the response as a JSON object with the following structure:
         {{
-            "risks": [
-                {{"type": "risk_type", "level": "low/moderate/high/severe", "description": "detailed description"}},
-                ...
-            ],
             "localEnvironment": {{
-                "ecosystemType": "type",
-                "characteristics": ["characteristic1", "characteristic2", ...]
+                "ecosystemType": "Type of ecosystem based on land cover and location",
+                "biodiversity": "Description of biodiversity in the area",
+                "conservation": "Description of conservation status",
+                "challenges": [
+                    "Challenge 1",
+                    "Challenge 2",
+                    "Challenge 3"
+                ]
             }},
-            "sustainability": [
-                {{"category": "category_name", "recommendations": ["rec1", "rec2", ...]}},
-                ...
+            "risks": [
+                {{
+                    "type": "Flooding",
+                    "level": "low|moderate|high",
+                    "description": "Description based on current conditions",
+                    "probability": "percentage",
+                    "contributing_factors": ["string"],
+                    "data_points_used": ["string"]
+                }},
+                {{
+                    "type": "Drought",
+                    "level": "low|moderate|high",
+                    "description": "Description based on current conditions",
+                    "probability": "percentage",
+                    "contributing_factors": ["string"],
+                    "data_points_used": ["string"]
+                }},
+                {{
+                    "type": "Air Pollution",
+                    "level": "low|moderate|high",
+                    "description": "Description based on current conditions",
+                    "probability": "percentage",
+                    "contributing_factors": ["string"],
+                    "data_points_used": ["string"]
+                }}
             ],
-            "healthImpact": {{
-                "airQualityEffects": "description",
-                "recommendations": ["rec1", "rec2", ...]
-            }}
+            "sustainability": [
+                {{
+                    "category": "Water Conservation",
+                    "recommendations": [
+                        "Recommendation 1",
+                        "Recommendation 2",
+                        "Recommendation 3"
+                    ]
+                }},
+                {{
+                    "category": "Energy Efficiency",
+                    "recommendations": [
+                        "Recommendation 1",
+                        "Recommendation 2",
+                        "Recommendation 3"
+                    ]
+                }},
+                {{
+                    "category": "Biodiversity",
+                    "recommendations": [
+                        "Recommendation 1",
+                        "Recommendation 2",
+                        "Recommendation 3"
+                    ]
+                }}
+            ]
         }}
+        
+        Important:
+        - All risk levels must be one of: "low", "moderate", "high"
+        - Include specific data points used in the analysis
+        - Base all assessments on the provided data only
+        - If it's currently raining, set drought risk to "low"
         """
         
         headers = {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         }
         
         data = {
             "contents": [{
-                "parts": [{"text": prompt}]
+                "parts": [{
+                    "text": prompt
+                }]
             }]
         }
         
-        response = requests.post(url, headers=headers, json=data)
-        response.raise_for_status()
-        result = response.json()
+        print("\nSending request to Gemini API...")
+        response = requests.post(
+            'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
+            headers=headers,
+            params={'key': GEMINI_API_KEY},
+            json=data
+        )
         
-        if 'candidates' in result and len(result['candidates']) > 0:
-            text = result['candidates'][0]['content']['parts'][0]['text']
-            insights = json.loads(text)
-            return insights
+        if response.status_code == 200:
+            try:
+                response_data = response.json()
+                if 'candidates' in response_data and len(response_data['candidates']) > 0:
+                    content = response_data['candidates'][0]['content']['parts'][0]['text']
+                    insights = json.loads(content)
+                    
+                    # Post-process the insights to ensure logical consistency
+                    if is_raining:
+                        # If it's raining, set drought risk to low
+                        for risk in insights['risks']:
+                            if risk['type'] == 'Drought':
+                                risk['level'] = 'low'
+                                risk['description'] = 'Current rainfall indicates low drought risk'
+                                risk['probability'] = '0%'
+                                risk['contributing_factors'] = ['Current rainfall']
+                                risk['data_points_used'] = ['Current weather conditions']
+                    
+                    # Update global variables with risk levels
+                    for risk in insights["risks"]:
+                        if risk["type"] == "Flooding":
+                            global Flooding
+                            Flooding = risk["level"]
+                        elif risk["type"] == "Drought":
+                            global Drought
+                            Drought = risk["level"]
+                        elif risk["type"] == "Air Pollution":
+                            global AirPollution
+                            AirPollution = risk["level"]
+                    
+                    return insights
+            except json.JSONDecodeError as e:
+                print(f"Error parsing Gemini response: {e}")
+                return generate_mock_environmental_insights(lat, lng, location_name, weather_data)
         else:
-            raise Exception("No valid response from Gemini API")
+            print(f"Error from Gemini API: {response.status_code}")
+            return generate_mock_environmental_insights(lat, lng, location_name, weather_data)
             
     except Exception as e:
-        print(f"Error generating AI environmental insights: {str(e)}")
+        print(f"Error in generate_ai_environmental_insights: {e}")
         return generate_mock_environmental_insights(lat, lng, location_name, weather_data)
 
 def generate_ai_response_with_openai(question, location, weather_data, environmental_insights):
