@@ -1,19 +1,22 @@
+// import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js';
+// import { db } from './firestore.js';
+
 document.addEventListener("DOMContentLoaded", () => {
-    if (localStorage.getItem('user')) {
-      const userString = localStorage.getItem('user');
-      const user = JSON.parse(userString);
-      const signInElement = document.getElementById('sign-in');
-      const avatarElement = document.getElementById('user-avatar');
-      
-      if (signInElement && user.name) {
-          signInElement.textContent = user.name;
-      }
-      
-      if (avatarElement && user.photoURL) {
-          avatarElement.src = user.photoURL;
-          avatarElement.classList.remove('hidden');
-      }
+  if (localStorage.getItem('user')) {
+    const userString = localStorage.getItem('user');
+    const user = JSON.parse(userString);
+    const signInElement = document.getElementById('sign-in');
+    const avatarElement = document.getElementById('user-avatar');
+
+    if (signInElement && user.name) {
+        signInElement.textContent = user.name;
     }
+    
+    if (avatarElement && user.photoURL) {
+        avatarElement.src = user.photoURL;
+        avatarElement.classList.remove('hidden');
+    }
+}
     // Global variables
     let map
     let marker

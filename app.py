@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, render_template, send_from_directory
+from flask_cors import CORS
 import os
 import json
 import random
@@ -8,9 +9,40 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__, static_folder='.')
-
+CORS(app)
 GEMINI_API_KEY = "AIzaSyAs8PoGPu-U4dx6MKXkUE-FWVoQnJ3QMXk"
 OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
+DATA_FILE = 'data.json'
+
+# Load from file
+def load_data():
+    if not os.path.exists(DATA_FILE):
+        return []
+    with open(DATA_FILE, 'r') as f:
+        return json.load(f)
+
+# Write to file
+def save_data(data):
+    with open(DATA_FILE, 'w') as f:
+        json.dump(data, f, indent=2)
+
+@app.route('/users', methods=['GET'])
+def get_users():
+    users = load_data()
+    return jsonify(users)
+
+@app.route('/users', methods=['POST'])
+def add_user():
+    user = request.get_json()
+    users = load_data()
+
+    # Add new user to list
+    users.append(user)
+
+    # Save updated list to file
+    save_data(users)
+
+    return jsonify({'message': 'User added', 'user': user}), 201
 
 @app.route("/")
 @app.route('/index.html')

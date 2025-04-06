@@ -1,12 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
     console.log("EcoAlert application initialized")
-
+    
     if (localStorage.getItem('user')) {
         const userString = localStorage.getItem('user');
         const user = JSON.parse(userString);
         const signInElement = document.getElementById('sign-in');
         const avatarElement = document.getElementById('user-avatar');
-        
+
+        document.getElementById("sign-button").style.setProperty("display", "none");
+
         if (signInElement && user.name) {
             signInElement.textContent = user.name;
         }

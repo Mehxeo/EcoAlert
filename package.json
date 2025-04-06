@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "chart.js": "^4.4.8",
+    "firebase": "^11.6.0",
     "leaflet": "^1.9.4"
   },
   "engines": {
