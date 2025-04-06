@@ -825,7 +825,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const ecosystemElement = document.createElement("div")
       ecosystemElement.className = "environment-section"
       ecosystemElement.innerHTML = `
-        <div class="environment-title" style="font-size: 1.2rem; font-weight: bold; color: white; margin-bottom: 1px; ;">Ecosystem Type</div>
+        <div class="environment-title" style="font-size: 1.2rem; font-weight: bold; color: white; margin-bottom: 1px;">Ecosystem Type</div>
         <p>${data.localEnvironment.ecosystemType}</p>
       `
       localEnvironmentContainer.appendChild(ecosystemElement)
@@ -843,7 +843,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const conservationElement = document.createElement("div")
       conservationElement.className = "environment-section"
       conservationElement.innerHTML = `
-        <div class="environment-title">Conservation Efforts</div>
+        <div class="environment-title" style="font-size: 1.2rem; font-weight: bold; color: white; margin-bottom: 1px;">Conservation Efforts</div>
         <p>${data.localEnvironment.conservation}</p>
       `
       localEnvironmentContainer.appendChild(conservationElement)
@@ -855,7 +855,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const challengesList = data.localEnvironment.challenges.map((challenge) => `<li>${challenge}</li>`).join("")
   
       challengesElement.innerHTML = `
-        <div class="environment-title">Environmental Challenges</div>
+        <div class="environment-title" style="font-size: 1.2rem; font-weight: bold; color: white; margin-bottom: 1px;">Environmental Challenges</div>
         <ul class="challenge-list">
           ${challengesList}
         </ul>
