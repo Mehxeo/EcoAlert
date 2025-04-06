@@ -23,7 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
     function success(position, callback) {
       lat = position.coords.latitude
       long =  position.coords.longitude;
-      console.log(lat, long)
       const locationName = `Location at ${lat.toFixed(4)}, ${long.toFixed(4)}`
       
       selectLocation(lat, long, locationName);
@@ -209,7 +208,7 @@ document.addEventListener("DOMContentLoaded", () => {
               map.removeControl(window.legendControl);
             }
           });
-          
+
           map.invalidateSize()
     
           // When map is ready, get user location
@@ -330,19 +329,23 @@ document.addEventListener("DOMContentLoaded", () => {
           showLoading(false)
         }, 500)
       })
-  
-      const tabButtons = document.querySelectorAll(".tab-button")
-      tabButtons.forEach((button) => {
-        button.addEventListener("click", function () {
-          tabButtons.forEach((btn) => btn.classList.remove("active"))
-          document.querySelectorAll(".tab-content").forEach((content) => content.classList.remove("active"))
-  
-          this.classList.add("active")
-          const tabId = this.getAttribute("data-tab")
-          document.getElementById(tabId).classList.add("active")
-        })
-      })
-  
+    
+      document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', () => {
+          const targetTabId = button.getAttribute('data-tab');
+      
+          console.log("Tab clicked:", targetTabId);
+
+          console.log(document.getElementById(targetTabId).classList)
+          document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+          document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      
+          button.classList.add('active');
+          document.getElementById(targetTabId).classList.add('active');
+          document.getElementById(targetTabId).classList.remove('hidden')
+        });
+      });
+
       document.addEventListener("click", (e) => {
         if (e.target.closest(".accordion-header")) {
           const accordionItem = e.target.closest(".accordion-item")
@@ -657,14 +660,11 @@ document.addEventListener("DOMContentLoaded", () => {
       })
     }
   
-    // Update weather UI with data
     function updateWeatherUI(data) {
-      // Update location info
       document.getElementById("location-name").textContent = data.location
       document.getElementById("location-coordinates").textContent =
         `Lat: ${data.coordinates.lat.toFixed(4)}, Lng: ${data.coordinates.lng.toFixed(4)}`
   
-      // Update current weather
       document.getElementById("current-temp").textContent = getTemperatureInCurrentUnit(data.current.temperature)
       document.getElementById("feels-like").textContent = getTemperatureInCurrentUnit(data.current.feelsLike)
       document.getElementById("weather-description").textContent = data.current.weatherDescription
@@ -674,17 +674,14 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("uv-index").textContent = data.current.uvIndex
       document.getElementById("visibility").textContent = `${data.current.visibility} km`
   
-      // Update weather icon
       const iconUrl = `https://openweathermap.org/img/wn/${data.current.icon}@2x.png`
       document.getElementById("weather-icon").src = iconUrl
       document.getElementById("weather-icon").alt = data.current.weatherDescription
   
-      // Update air quality badge
-      const airQualityElement = document.getElementById("air-quality")
+      const airQualityElement = document.getElementById("air-quality-badge")
       airQualityElement.textContent = data.airQuality.category
       airQualityElement.className = "badge"
   
-      // Add appropriate class based on air quality category
       if (data.airQuality.category === "Good") {
         airQualityElement.classList.add("badge-good")
       } else if (data.airQuality.category === "Moderate") {
@@ -695,7 +692,6 @@ document.addEventListener("DOMContentLoaded", () => {
         airQualityElement.classList.add("badge-unhealthy")
       }
   
-      // Update forecast days
       const forecastContainer = document.getElementById("forecast-days")
       forecastContainer.innerHTML = ""
   
@@ -715,12 +711,10 @@ document.addEventListener("DOMContentLoaded", () => {
         forecastContainer.appendChild(dayElement)
       })
   
-      // Update air quality tab
       document.getElementById("aqi-value").textContent = data.airQuality.aqi
       document.getElementById("aqi-category").textContent = data.airQuality.category
       document.getElementById("aqi-category").className = "badge"
   
-      // Add appropriate class based on air quality category
       if (data.airQuality.category === "Good") {
         document.getElementById("aqi-category").classList.add("badge-good")
         document.getElementById("aqi-value").style.color = "var(--badge-success)"
@@ -743,7 +737,6 @@ document.addEventListener("DOMContentLoaded", () => {
           "Everyone may begin to experience health effects; members of sensitive groups may experience more serious health effects."
       }
   
-      // Update pollutant values
       document.getElementById("pm25").textContent = `${data.airQuality.pm25} μg/m³`
       document.getElementById("pm10").textContent = `${data.airQuality.pm10} μg/m³`
       document.getElementById("o3").textContent = `${data.airQuality.o3} μg/m³`

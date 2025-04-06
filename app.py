@@ -54,6 +54,7 @@ def get_weather():
         print(f"Error fetching weather data: {str(e)}")
         return jsonify({"error": f"Failed to fetch weather data: {str(e)}"}), 500
 
+
 @app.route('/api/environmental-insights', methods=['POST'])
 def get_environmental_insights():
     try:
@@ -425,9 +426,20 @@ def generate_rule_based_response(question, location, weather_data, environmental
                f"You can ask me specific questions about the weather forecast, air quality, environmental risks, or sustainability recommendations for this location."
 
 def generate_air_quality_insights(lat, lng):
-    current_url = f"https://air-quality-api.open-meteo.com/v1/air-quality?latitude={lat}&longitude={lng}/&hourly=pm10,pm2_5"
-    current_response = requests.get(current_url)
-    current_data = current_response.json()
+    url = f"https://air-quality-api.open-meteo.com/v1/air-quality?latitude={lat}&longitude={lng}&hourly=us_aqi,us_aqi_pm2_5,us_aqi_pm10,us_aqi_nitrogen_dioxide,us_aqi_ozone,us_aqi_carbon_monoxide,us_aqi_sulphur_dioxide&current=us_aqi"
+
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        data = response.json()
+        time_series = data["hourly"]["time"][0:24]
+        pm10_series = data["hourly"]["us_aqi_pm10"][0:24]
+        pm2_5_series = data["hourly"]["us_aqi_pm2_5"][0:24]
+
+        print((time_series))
+        print(pm10_series)
+    else:
+        print("Failed to retrieve data:", response.status_code)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
