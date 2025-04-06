@@ -8,21 +8,22 @@
 }
 :root {
     /*Light theme*/
-    --primary-color: hsl(123, 46%, 34%);
+    --primary-color: #2e7d32;
     --primary-color-dark: #1b5e20;
     --primary-color-light: #81c784;
     --text-color: #263238;
     --text-color-light: #f5f5f5;
     --background-color: #f1f8e9;
-    --card-bg: rgba(255, 255, 255);
+    --card-bg: rgba(255, 255, 255, 0.9);
     --card-bg-solid: #ffffff;
-    --overlay-bg: rgba(241, 248, 233, 0.7);
+    --overlay-bg: rgba(241, 248, 233, 0.9);
     --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     --detail-bg: rgba(255, 255, 255, 0.5);
     --border-color: #e0e0e0;
     --badge-success: #4caf50;
     --badge-warning: #ff9800;
     --badge-danger: #f44336;
+    --badge-severe: #8b0000;
     --badge-info: #2196f3;
 }
   
@@ -34,7 +35,7 @@
     --text-color: #e0e0e0;
     --text-color-light: #f5f5f5;
     --background-color: #1a1a1a;
-    --card-bg: rgba(34, 34, 34);
+    --card-bg: rgba(34, 34, 34, 0.9);
     --card-bg-solid: #222222;
     --overlay-bg: rgba(26, 26, 26, 0.8);
     --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
@@ -64,9 +65,54 @@
     background-attachment: fixed;
     background-repeat: no-repeat;
   }
-  body#landing-page {
-    background-color: black !important;
+
+  /* Animation Classes */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+/* Delay Classes */
+.delay-1 {animation-delay: 0.2s;}
+.delay-2 {animation-delay: 0.4s;}
+.delay-3 {animation-delay: 0.6s;}
+.delay-4 {animation-delay: 0.8s;}
+.delay-5 {animation-delay: 1s;}
+.delay-6 {animation-delay: 1.2s;}
+.delay-7 {animation-delay: 1.4s;}
+.delay-8 {animation-delay: 1.6s;}
+.delay-9 {animation-delay: 1.8s;}
+.delay-10 {animation-delay: 2s;}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.avatar-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary-color);
+}
+
+.hidden {
+  display: none;
+}
+
+@keyframes fadeInUp {
+  from {
+      opacity: 0;
+      transform: translateY(20px);
   }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
   body::before {
     content: "";
     position: absolute;
@@ -523,6 +569,7 @@
     padding: 30px;
     border-radius: 10px;
     box-shadow: var(--shadow);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
   }
   
   .map-container h2 {
@@ -530,24 +577,6 @@
     margin-bottom: 20px;
     color: var(--primary-color);
     transition: color 0.3s ease;
-  }
-
-  .recenter-button {
-    padding: 10px 16px;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: bold;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
-  }
-  
-  .recenter-button:hover {
-    background-color: var(--primary-color-dark);
-    color: white;
   }
   
   .search-form {
@@ -564,7 +593,7 @@
     list-style: none;
     padding: 0;
     margin: 0;
-    gap: 0.5rem;
+    gap: 0.5rem; /* spacing between items */
     justify-content: center;
   }
 
@@ -684,6 +713,7 @@
     border-radius: 10px;
     box-shadow: var(--shadow);
     overflow: hidden;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
   }
 
   .card-header {
@@ -758,6 +788,7 @@
     padding: 10px;
     background: var(--detail-bg);
     border-radius: 5px;
+    transition: background 0.3s ease;
   }
 
   .detail-label {
@@ -945,32 +976,108 @@
   ==================================================== */
 
   /* Air Quality */
-  .air-quality-main {
-    display: flex;
+/* Air Quality Main Container */
+.aqi-display {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center horizontally */
+  gap: 20px; /* Add spacing between AQI value and category */
+  padding: 15px;
+  background-color: var(--card-bg-solid);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px var(--shadow);
+  text-align: center;
+}
+
+/* AQI Value */
+.aqi-value {
+  font-size: 3rem;
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+/* AQI Category Badge */
+.aqi-category {
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 8px 15px;
+  border-radius: 20px;
+  color: #fff;
+  text-transform: uppercase;
+  background-color: var(--badge-success); /* Default color */
+}
+
+.aqi-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+.aqi-description {
+  padding: 15px;
+  background-color: var(--card-bg-solid);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px var(--shadow);
+}
+
+.aqi-description p {
+  font-size: 14px;
+  color: var(--text-secondary-color);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Pollutants Section */
+.pollutants {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 15px;
+  padding: 15px;
+  background-color: var(--card-bg-solid);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px var(--shadow);
+}
+
+.pollutant {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px var(--shadow);
+}
+
+.pollutant-name {
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--text-color);
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.pollutant-value {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--text-secondary-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .aqi-display {
     flex-direction: column;
     align-items: center;
-    gap: 20px;
-    margin-bottom: 30px;
+    gap: 10px;
   }
 
-  @media (min-width: 768px) {
-    .air-quality-main {
-      flex-direction: row;
-    }
-    .aqi-display {
-      flex: 1;
-    }
-    .aqi-description {
-      flex: 2;
-    }
+  .pollutants {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   }
-
-  .aqi-value {
-    font-size: 3rem;
-    font-weight: 600;
-    text-align: center;
-    margin-bottom: 10px;
-  }
+}
 
   .badge {
     padding: 6px 12px;
@@ -1000,36 +1107,11 @@
     color: white;
   }
 
-  /* Pollutants */
-  .pollutants {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 9px;
+  #aqi-category {
+    width: 10%;
+    text-align: center;
   }
 
-  .pollutant {
-    padding: 10px;
-    background: var(--card-bg-solid);
-    border-radius: 8px;
-  }
-
-  .pollutant-name {
-    font-size: 0.8rem;
-    opacity: 0.7;
-    margin-bottom: 5px;
-  }
-
-  .pollutant-value {
-    font-size: 1.0rem;
-    font-weight: 500;
-  }
-
-  /* Chart */
-  #aq-chart {
-    margin-top: 20px;
-    border-radius: 8px;
-    padding: 10px;
-  }
 
 
   /* Environmental Insights */
@@ -1082,7 +1164,7 @@
   }
 
   .badge-severe {
-    background-color: #8b0000;
+    background-color: var(--badge-severe);
     color: white;
   }
 
@@ -1147,8 +1229,18 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
+    padding: 20px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px var(--shadow);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
   }
-
+  
+  .local-environment:hover {
+    box-shadow: 0 6px 12px var(--shadow);
+  }
+  
   .environment-section {
     padding: 15px;
     background: var(--card-bg-solid);
@@ -1170,6 +1262,73 @@
     margin-bottom: 8px;
   }
 
+/* Flood Risks Grid */
+.flood-risks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  background-color: var(--background);
+  border-radius: 8px;
+}
+
+/* Flood Risk Item */
+.flood-risk-item {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 15px;
+  background-color: var(--card-bg);
+  box-shadow: 0 4px 8px var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.flood-risk-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px var(--shadow);
+}
+
+/* Flood Risk Item Header */
+.flood-risk-item h4 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  color: var(--text-color);
+  font-weight: bold;
+}
+
+/* Flood Risk Item Text */
+.flood-risk-item p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: var(--text-color);
+  line-height: 1.5;
+}
+
+/* Badge Styles */
+.flood-risk-item .badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.badge-low {
+  background-color: var(--badge-success);
+}
+
+.badge-moderate {
+  background-color: var(--badge-warning);
+}
+
+.badge-high {
+  background-color: var(--badge-danger);
+}
+
+.badge-severe {
+  background-color: var(--badge-severe);
+}
   /* ====================================================
     Chat Interface
   ==================================================== */
@@ -1256,6 +1415,23 @@
   }
 
   .chat-input button:hover {
+    background-color: var(--primary-color-dark);
+  }
+
+  .recenter-button {
+    padding: 10px 16px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+  }
+  
+  .recenter-button:hover {
     background-color: var(--primary-color-dark);
   }
 

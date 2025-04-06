@@ -1,0 +1,288 @@
+[33mcommit 3026a727e15cfa9d130903153e8a83e0a6792b90[m[33m ([m[1;36mHEAD -> [m[1;32mHimesh[m[33m)[m
+Author: Utsav <utsavd500@Gmail.com>
+Date:   Sun Apr 6 05:17:45 2025 -0400
+
+    Made enviormental insight to work properly
+
+[33mcommit d199c61021ac2beac71260e4f487efd6f13ae93f[m
+Merge: f640a40 3c546e8
+Author: Utsav <utsavd500@Gmail.com>
+Date:   Sun Apr 6 01:16:11 2025 -0400
+
+    Merge branch 'Himesh' of https://github.com/Mehxeo/Enviorvision into Himesh
+
+[33mcommit f640a4035bb38869b7e768c76b15217a8e8843e6[m
+Author: Utsav <utsavd500@Gmail.com>
+Date:   Sun Apr 6 01:16:06 2025 -0400
+
+    Added better ai responses
+
+[33mcommit 3c546e8fe3013b2973bc1473d60f618492101b23[m
+Author: Andrew Hu <andrewhu32009@gmail.com>
+Date:   Sun Apr 6 01:13:07 2025 -0400
+
+    add untrackef files
+
+[33mcommit d246b6647e44e1cac781ccc453d679c4fc0794e5[m
+Merge: e7596f3 7268995
+Author: Andrew Hu <andrewhu32009@gmail.com>
+Date:   Sun Apr 6 01:12:03 2025 -0400
+
+    merge api updates Merge branch 'Himesh' of https://github.com/Mehxeo/Enviorvision into Himesh
+
+[33mcommit e7596f325533060e610bb43baebc98a9d6946b68[m
+Author: Andrew Hu <andrewhu32009@gmail.com>
+Date:   Sun Apr 6 01:12:01 2025 -0400
+
+    externd landing bg
+
+[33mcommit 7268995819b62e06c828a53ae1debb94b644b062[m
+Merge: 639c156 d3ed600
+Author: Himesh Ahuja <hhhimesh.131@gmail.com>
+Date:   Sun Apr 6 00:58:05 2025 -0400
+
+    Merge branch 'Himesh' of https://github.com/Mehxeo/Enviorvision into Himesh
+
+[33mcommit 639c156a57eb1d5c0abaa182f460074c352a17d3[m
+Author: Himesh Ahuja <hhhimesh.131@gmail.com>
+Date:   Sun Apr 6 00:57:56 2025 -0400
+
+    finished air quality and css updates
+
+[33mcommit 996f7494796b772579ed52b8b1960857b6a31ed9[m
+Author: Utsav <utsavd500@Gmail.com>
+Date:   Sun Apr 6 00:41:53 2025 -0400
+
+    updating ben
+
+[33mcommit f421e7dfff87818868bbce271ea761b243d14514[m
+Merge: 9f4fbe1 d3ed600
+Author: Utsav <utsavd500@Gmail.com>
+Date:   Sat Apr 5 23:37:30 2025 -0400
+
+    Merge branch 'Himesh' of https://github.com/Mehxeo/Enviorvision into Himesh
+
+[33mcommit 9f4fbe1ef0bb47010f58acdff2b1cf24fd5dd4be[m
+Author: Utsav <utsavd500@Gmail.com>
+Date:   Sat Apr 5 23:36:06 2025 -0400
+
+    Using gemini instead of open-ai api and made the text look cleaners
+
+[33mcommit d3ed600f60d4fc73e51a832fbfff89baa2a7a46d[m
+Author: Andrew Hu <andrewhu32009@gmail.com>
+Date:   Sat Apr 5 23:17:56 2025 -0400
+
+    packaged himesh n andrew frontend for itsav
+
+[33mcommit 870eefe74f43871493c142c092d77605cd8bab02[m
+Merge: 7d140eb 076f616
+Author: Andrew Hu <andrewhu32009@gmail.com>
+Date:   Sat Apr 5 23:17:02 2025 -0400
+
+    Taking CODE KINGS changes into andrews stuff Merge branch 'Himesh' of https://github.com/Mehxeo/Enviorvision into Himesh
+
+[33mcommit 7d140eb3e9cf609eda58a8f4cb477216ac1ea3e2[m
+Author: Andrew Hu <andrewhu32009@gmail.com>
+Date:   Sat Apr 5 23:16:57 2025 -0400
+
+    ecopoints words on langing page
+
+[33mcommit 076f616cc4f43bdf628f2683b5a37411b8b0537c[m
+Merge: bb31e49 423872b
+Author: Himesh Ahuja <hhhimesh.131@gmail.com>
+Date:   Sat Apr 5 23:16:05 2025 -0400
+
+    Merge branch 'Himesh' of https://github.com/Mehxeo/Enviorvision into Himesh
+
+[33mcommit bb31e4987afddb51aa9d651f2a67d37bebb3274b[m
+Author: Himesh Ahuja <hhhimesh.131@gmail.com>
+Date:   Sat Apr 5 23:16:00 2025 -0400
+
+    Fix
+
+[33mcommit 982e47314138068c9181a61b8408b93ecf60ce07[m
+Author: Himesh Ahuja <hhhimesh.131@gmail.com>
+Date:   Sat Apr 5 23:13:49 2025 -0400
+
+    Air Quality works
+
+[33mcommit 423872b08240b5aa863bbd8cf82f69abc3a6a850[m
+Merge: 096dfe1 1b2c0e7
+Author: Andrew Hu <andrewhu32009@gmail.com>
+Date:   Sat Apr 5 22:49:01 2025 -0400
+
+    psuh for itsav
+
+[33mcommit 096dfe102d86608d90cd40b5e4bf11b0988f6c6b[m
+Author: Andrew Hu <andrewhu32009@gmail.com>
+Date:   Sat Apr 5 22:44:52 2025 -0400
+
+    Fade in on landing page and added hack the nest
+
+[33mcommit 1b2c0e7123c1e5e9b145bd5e1752e2d4df72ee46[m
+Author: Himesh Ahuja <hhhimesh.131@gmail.com>
+Date:   Sat Apr 5 21:17:31 2025 -0400
+
+    removing all
+
+[33mcommit 0ebe639a98a23a7f05b1d07c474f37d23da0a219[m
+Merge: cfec5ab e76dff5
+Author: Himesh Ahuja <hhhimesh.131@gmail.com>
+Date:   Sat Apr 5 19:16:53 2025 -0400
+
+    Merge branch 'Himesh' of https://github.com/Mehxeo/Enviorvision into Himesh
+
+[33mcommit e76dff51929a1be45bff16e9a135af4252c701dc[m
+Author: Andrew Hu <andrewhu32009@gmail.com>
+Date:   Sat Apr 5 19:12:03 2025 -0400
+
+    changed caption
+
+[33mcommit cfec5ab62398480b9e3f910f2c43dd0b3745852e[m
+Author: Himesh Ahuja <hhhimesh.131@gmail.com>
+Date:   Sat Apr 5 19:11:18 2025 -0400
+
+    adding images
+
+[33mcommit d18250a940c8ed85409644625c1e10d4009145ff[m
+Merge: 432a40f 73595b4
+Author: Andrew Hu <andrewhu32009@gmail.com>
+Date:   Sat Apr 5 19:09:13 2025 -0400
+
+    commit css
+
+[33mcommit 432a40fc42984ab31348d8b9497fa3e64360a204[m
+Author: Andrew Hu <andrewhu32009@gmail.com>
+Date:   Sat Apr 5 19:08:00 2025 -0400
+
+    css landing page updates
+
+[33mcommit 73595b42bc949ec5a484cd9d470b95dc5a828f34[m
+Author: Himesh Ahuja <hhhimesh.131@gmail.com>
+Date:   Sat Apr 5 19:06:25 2025 -0400
+
+    scroll wheel and css file
+
+[33mcommit 4945c4823a4806145ace2923df6a7029246c1b8c[m
+Author: Andrew Hu <andrewhu32009@gmail.com>
+Date:   Sat Apr 5 18:43:49 2025 -0400
+
+    added untracked stuff
+
+[33mcommit 80550777702443af5a562b7ca9e1b67c9005d8c4[m
+Merge: 38ed68e ed1198b
+Author: Andrew Hu <andrewhu32009@gmail.com>
+Date:   Sat Apr 5 18:40:03 2025 -0400
+
+    Merge himesh stuff into new landing page
+    Merge branch 'Himesh' of https://github.com/Mehxeo/Enviorvision into Himesh
+
+[33mcommit 38ed68e77c84861801cacfd01a012e7033c1bb31[m
+Author: Andrew Hu <andrewhu32009@gmail.com>
+Date:   Sat Apr 5 18:39:55 2025 -0400
+
+    Landing Page
+
+[33mcommit ed1198b1dad0981796f0678f1debbd60b8c06414[m
+Author: Himesh Ahuja <hhhimesh.131@gmail.com>
+Date:   Sat Apr 5 17:33:33 2025 -0400
+
+    Weather layers, forecast, comments gone
+
+[33mcommit 6e20e0f62af0921048ec8ad75dc9fcf40399cb0f[m
+Author: Himesh Ahuja <hhhimesh.131@gmail.com>
+Date:   Sat Apr 5 17:01:39 2025 -0400
+
+    Working weather forecast
+
+[33mcommit 269280c1674612f548beb332ebcae2c6d3d618e6[m
+Author: Himesh Ahuja <hhhimesh.131@gmail.com>
+Date:   Sat Apr 5 16:47:45 2025 -0400
+
+    Finished map:
+
+[33mcommit 5a404e2b30a2a75fc186d0dc32b12970026ac7b6[m
+Author: Andrew Hu <andrewhu32009@gmail.com>
+Date:   Sat Apr 5 15:22:06 2025 -0400
+
+    css stuff
+
+[33mcommit 4106d66e16281051a7e64b345c1d0c102306b7ef[m
+Merge: b55923f 0271b93
+Author: Andrew Hu <andrewhu32009@gmail.com>
+Date:   Sat Apr 5 15:02:58 2025 -0400
+
+    added stuff
+
+[33mcommit b55923f62ae23dd0de2f4efbf5cd1ce6ecccd40e[m
+Author: Andrew Hu <andrewhu32009@gmail.com>
+Date:   Sat Apr 5 15:00:59 2025 -0400
+
+    Styling for suggestions
+
+[33mcommit 0271b9396ce56652c2cd3d77b3a23efac83a9627[m
+Author: Himesh Ahuja <hhhimesh.131@gmail.com>
+Date:   Sat Apr 5 14:35:03 2025 -0400
+
+    Fixed refresh issue
+
+[33mcommit 3d401832048f6f94eb6d7306b21483cb2ccac6b3[m
+Merge: 1cf583a 5e48217
+Author: Andrew Hu <andrewhu32009@gmail.com>
+Date:   Sat Apr 5 14:24:06 2025 -0400
+
+    fixed merge conf in package.json
+
+[33mcommit 1cf583a28431482c7ce506a40f31fbcd7c5d1e20[m
+Author: Andrew Hu <andrewhu32009@gmail.com>
+Date:   Sat Apr 5 14:21:51 2025 -0400
+
+    prepare for merge w andrew
+
+[33mcommit 2b9ec8fa8824fa3277e8d27db9aaef265f140875[m
+Author: Himesh Ahuja <hhhimesh.131@gmail.com>
+Date:   Sat Apr 5 13:54:29 2025 -0400
+
+    Hello
+
+[33mcommit 5e4821780297144bed8bfd3c03110caed7eb82d7[m[33m ([m[1;31morigin/andrew[m[33m)[m
+Author: Andrew Hu <andrewhu32009@gmail.com>
+Date:   Sat Apr 5 13:54:04 2025 -0400
+
+    added css animations to suggestions
+
+[33mcommit bc3e80a9c3eab2cde6b00702f97aeb169d4f97a1[m
+Author: Himesh Ahuja <hhhimesh.131@gmail.com>
+Date:   Sat Apr 5 13:38:23 2025 -0400
+
+    Working on location
+
+[33mcommit b239d1c1583d4dd50ea2cc5fe9064827306ff183[m
+Author: Andrew Hu <andrewhu32009@gmail.com>
+Date:   Sat Apr 5 13:24:47 2025 -0400
+
+    Added lookup using geecoding api and pass long and lat to leaftlet
+
+[33mcommit 5c3b509e9dbbbccdad2b1d27af5fc28a086cb339[m
+Author: Utsav <utsavd500@Gmail.com>
+Date:   Sat Apr 5 12:29:27 2025 -0400
+
+    taking out .env files
+
+[33mcommit 9fa2f9443a5bd828e1573f6ebb0f6526e5780005[m
+Author: Utsav <utsavd500@Gmail.com>
+Date:   Sat Apr 5 11:52:24 2025 -0400
+
+    adding .env files and packages
+
+[33mcommit 89cd62ac3ba8a253d11e0f2042acab4c7a67a1a1[m
+Author: Andrew Hu <andrewhu32009@gmail.com>
+Date:   Sat Apr 5 10:06:43 2025 -0400
+
+    Changed Name From Envirovision to EcoAlert
+
+[33mcommit dbbcfad034ab39c0fec1bcdc663f5a0a02e84a25[m
+Author: Mehxeo <utsavd500@gmail.com>
+Date:   Sat Apr 5 01:06:42 2025 -0400
+
+    creating project (ai gpt stuff)

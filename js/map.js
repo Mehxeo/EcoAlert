@@ -1,4 +1,19 @@
 document.addEventListener("DOMContentLoaded", () => {
+    if (localStorage.getItem('user')) {
+      const userString = localStorage.getItem('user');
+      const user = JSON.parse(userString);
+      const signInElement = document.getElementById('sign-in');
+      const avatarElement = document.getElementById('user-avatar');
+      
+      if (signInElement && user.name) {
+          signInElement.textContent = user.name;
+      }
+      
+      if (avatarElement && user.photoURL) {
+          avatarElement.src = user.photoURL;
+          avatarElement.classList.remove('hidden');
+      }
+    }
     // Global variables
     let map
     let marker
@@ -469,20 +484,17 @@ document.addEventListener("DOMContentLoaded", () => {
           return response.json()
         })
         .then((data) => {
-          // Store the environmental insights
           environmentalInsights = data
   
-          // Update UI with the data
           updateWeatherUI(weatherData)
           updateEnvironmentalInsightsUI(environmentalInsights)
+
+          fetchFloodData(selectedLocation.lat, selectedLocation.lng);
   
-          // Show the weather data section
           document.getElementById("weather-data").classList.remove("hidden")
   
-          // Hide loading indicator
           showLoading(false)
   
-          // Show success toast
           showToast(
             "Location data loaded",
             `Weather and environmental data for ${selectedLocation.name} has been loaded.`,
@@ -801,7 +813,7 @@ document.addEventListener("DOMContentLoaded", () => {
       data.sustainability.forEach((category, index) => {
         const categoryElement = document.createElement("div")
         categoryElement.className = "accordion-item"
-        if (index === 0) categoryElement.classList.add("active") // Open first item by default
+        if (index === 0) categoryElement.classList.add("active")
   
         const recommendationsList = category.recommendations.map((rec) => `<li>${rec}</li>`).join("")
   
@@ -822,45 +834,40 @@ document.addEventListener("DOMContentLoaded", () => {
         recommendationsContainer.appendChild(categoryElement)
       })
   
-      // Update local environment info
       const localEnvironmentContainer = document.getElementById("local-environment")
       localEnvironmentContainer.innerHTML = ""
   
-      // Ecosystem type
       const ecosystemElement = document.createElement("div")
       ecosystemElement.className = "environment-section"
       ecosystemElement.innerHTML = `
-        <div class="environment-title">Ecosystem Type</div>
+        <div class="environment-title" style="font-size: 1.2rem; font-weight: bold; color: white; margin-bottom: 1px;">Ecosystem Type</div>
         <p>${data.localEnvironment.ecosystemType}</p>
       `
       localEnvironmentContainer.appendChild(ecosystemElement)
   
-      // Biodiversity
       const biodiversityElement = document.createElement("div")
       biodiversityElement.className = "environment-section"
       biodiversityElement.innerHTML = `
-        <div class="environment-title">Biodiversity</div>
+        <div class="environment-title" style="font-size: 1.2rem; font-weight: bold; color: white; margin-bottom: 1px;">Biodiversity</div>
         <p>${data.localEnvironment.biodiversity}</p>
       `
       localEnvironmentContainer.appendChild(biodiversityElement)
   
-      // Conservation
       const conservationElement = document.createElement("div")
       conservationElement.className = "environment-section"
       conservationElement.innerHTML = `
-        <div class="environment-title">Conservation Efforts</div>
+        <div class="environment-title" style="font-size: 1.2rem; font-weight: bold; color: white; margin-bottom: 1px;">Conservation Efforts</div>
         <p>${data.localEnvironment.conservation}</p>
       `
       localEnvironmentContainer.appendChild(conservationElement)
   
-      // Environmental challenges
       const challengesElement = document.createElement("div")
       challengesElement.className = "environment-section"
   
       const challengesList = data.localEnvironment.challenges.map((challenge) => `<li>${challenge}</li>`).join("")
   
       challengesElement.innerHTML = `
-        <div class="environment-title">Environmental Challenges</div>
+        <div class="environment-title" style="font-size: 1.2rem; font-weight: bold; color: white; margin-bottom: 1px;">Environmental Challenges</div>
         <ul class="challenge-list">
           ${challengesList}
         </ul>
@@ -868,7 +875,6 @@ document.addEventListener("DOMContentLoaded", () => {
       localEnvironmentContainer.appendChild(challengesElement)
     }
   
-    // Show/hide loading indicator
     function showLoading(show) {
       const loadingIndicator = document.getElementById("loading-indicator")
       if (show) {
@@ -878,7 +884,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   
-    // Add a message to the chat
     function addChatMessage(message, type, messageId = null) {
       const chatMessages = document.getElementById("chat-messages")
       const messageElement = document.createElement("div")
@@ -888,13 +893,10 @@ document.addEventListener("DOMContentLoaded", () => {
       
       messageElement.className = `message ${type}-message`
       
-      // Format the message
       let formattedMessage = message
       
-      // Replace **word** with <strong>word</strong>
       formattedMessage = formattedMessage.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       
-      // Format lists with bullet points
       formattedMessage = formattedMessage.replace(/\n\s*\*\s/g, '\n• ')
       
       messageElement.innerHTML = `<p>${formattedMessage}</p>`
@@ -905,7 +907,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return id
     }
   
-    // Ask AI a question
     function askAI(question) {
       if (!selectedLocation.lat || !selectedLocation.lng) {
         showToast("Error", "Please select a location on the map first", "error")
@@ -935,10 +936,8 @@ document.addEventListener("DOMContentLoaded", () => {
             throw new Error(data.error)
           }
           
-          // Add AI response
           let formattedResponse = data.response
           
-          // Format the response
           formattedResponse = formattedResponse.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
           formattedResponse = formattedResponse.replace(/\n\s*\*\s/g, '\n• ')
           
@@ -946,16 +945,13 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .catch((error) => {
           console.error("Error:", error)
-          // Add error message
           addChatMessage(`Error: ${error.message}`, "error")
         })
         .finally(() => {
-          // Re-enable the input and submit button after processing is complete
           const chatInput = document.getElementById("chat-input")
           const submitButton = document.querySelector('#chat-form button[type="submit"]')
           if (chatInput) chatInput.disabled = false
           if (submitButton) submitButton.disabled = false
-          if (chatInput) chatInput.focus() // Focus the input for the next message
         })
     }
   
@@ -1023,19 +1019,19 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
     
-    let airQualityChart; // for managing updates
+    let airQualityChart;
     
     function renderAirQualityChart(timeLabels, pm25, pm10) {
       const ctx = document.getElementById("aq-chart").getContext("2d");
     
       if (airQualityChart) {
-        airQualityChart.destroy(); // Remove old chart if present
+        airQualityChart.destroy();
       }
     
       airQualityChart = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: timeLabels,
+          labels: splitLongLabels(timeLabels),
           datasets: [
             {
               label: 'PM2.5',
@@ -1073,14 +1069,76 @@ document.addEventListener("DOMContentLoaded", () => {
             },
             x: {
               ticks: {
-                maxTicksLimit: 12
+                maxTicksLimit: 12,
+                minRotation: 0,
+                maxRotation: 0
               }
             }
           }
         }
       });
     }
+    
+    function splitLongLabels(labels){
+      var i = 0, len = labels.length;
+      var splitlabels = labels;
+      while (i < len) {
+          var words = labels[i].trim().split(',');
+          if(words.length>1){
+            for(var j=0; j<words.length; j++){}
+            splitlabels[i] = words;
+          }   
+        i++
+      }
+      return splitlabels;
+  }
 
-  })
+  async function fetchFloodData(lat, lng) {
+    const url = `https://flood-api.open-meteo.com/v1/flood?latitude=${lat}&longitude=${lng}&daily=river_discharge`;
+  
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`Failed to fetch flood data: ${response.status} ${response.statusText}`);
+      const data = await response.json();
+  
+      updateFloodRiskUI(data.daily);
+    } catch (error) {
+      console.error("Error fetching flood data:", error);
+      showToast("Error", "Failed to load flood data. Please try again later.", "error");
+    }
+  }
+
+  function updateFloodRiskUI(dailyData) {
+    const floodRisksGrid = document.getElementById("flood-risks-grid");
+  
+    if (dailyData && dailyData.river_discharge) {
+      // Limit to the first 6 days
+      const riverDischarge = dailyData.river_discharge.slice(0, 6);
+      const time = dailyData.time.slice(0, 6);
+  
+      floodRisksGrid.innerHTML = riverDischarge
+        .map((discharge, index) => {
+          const date = time[index];
+          const riskLevel = discharge > 5000 ? "High" : discharge > 2000 ? "Moderate" : "Low";
+          const badgeClass = {
+            High: "badge-high",
+            Moderate: "badge-moderate",
+            Low: "badge-low",
+          }[riskLevel];
+  
+          return `
+            <div class="flood-risk-item">
+              <h4>Flood Risk on ${new Date(date).toLocaleDateString()}</h4>
+              <p><strong>Risk Level:</strong> <span class="badge ${badgeClass}">${riskLevel} Risk</span></p>
+              <p>River discharge: ${discharge} m³/s</p>
+            </div>
+          `;
+        })
+        .join("");
+    } else {
+      floodRisksGrid.innerHTML = "<p>No flood data available for this location.</p>";
+    }
+  }
+})
   
   

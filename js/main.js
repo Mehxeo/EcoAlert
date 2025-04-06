@@ -1,6 +1,23 @@
 document.addEventListener("DOMContentLoaded", () => {
     console.log("EcoAlert application initialized")
 
+    if (localStorage.getItem('user')) {
+        const userString = localStorage.getItem('user');
+        const user = JSON.parse(userString);
+        const signInElement = document.getElementById('sign-in');
+        const avatarElement = document.getElementById('user-avatar');
+        
+        if (signInElement && user.name) {
+            signInElement.textContent = user.name;
+        }
+        
+        if (avatarElement && user.photoURL) {
+            avatarElement.src = user.photoURL;
+            avatarElement.classList.remove('hidden');
+        }
+    }
+
+
     const cards = document.querySelectorAll('.feature-card');
     const sectText = document.querySelectorAll('.section-text');
     cards.forEach((card, index) => {
@@ -24,6 +41,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
     cards.forEach(card => observer.observe(card));
     sectText.forEach(text => observer.observe(text));
-  });
-  
-  
+});
