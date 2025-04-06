@@ -798,7 +798,7 @@ document.addEventListener("DOMContentLoaded", () => {
       data.sustainability.forEach((category, index) => {
         const categoryElement = document.createElement("div")
         categoryElement.className = "accordion-item"
-        if (index === 0) categoryElement.classList.add("active") // Open first item by default
+        if (index === 0) categoryElement.classList.add("active")
   
         const recommendationsList = category.recommendations.map((rec) => `<li>${rec}</li>`).join("")
   
@@ -830,16 +830,14 @@ document.addEventListener("DOMContentLoaded", () => {
       `
       localEnvironmentContainer.appendChild(ecosystemElement)
   
-      // Biodiversity
       const biodiversityElement = document.createElement("div")
       biodiversityElement.className = "environment-section"
       biodiversityElement.innerHTML = `
-        <div class="environment-title">Biodiversity</div>
+        <div class="environment-title" style="font-size: 1.2rem; font-weight: bold; color: white; margin-bottom: 1px;">Biodiversity</div>
         <p>${data.localEnvironment.biodiversity}</p>
       `
       localEnvironmentContainer.appendChild(biodiversityElement)
   
-      // Conservation
       const conservationElement = document.createElement("div")
       conservationElement.className = "environment-section"
       conservationElement.innerHTML = `
@@ -848,7 +846,6 @@ document.addEventListener("DOMContentLoaded", () => {
       `
       localEnvironmentContainer.appendChild(conservationElement)
   
-      // Environmental challenges
       const challengesElement = document.createElement("div")
       challengesElement.className = "environment-section"
   
