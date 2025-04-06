@@ -373,16 +373,23 @@ document.addEventListener("DOMContentLoaded", () => {
       if (chatForm) {
         chatForm.addEventListener("submit", (e) => {
           e.preventDefault()
+          
           const chatInput = document.getElementById("chat-input")
           const question = chatInput.value.trim()
-  
+          
           if (!question) return
+          
+          // Disable the input and submit button while processing
+          chatInput.disabled = true
+          const submitButton = chatForm.querySelector('button[type="submit"]')
+          if (submitButton) submitButton.disabled = true
+          
+          // Add user message
           addChatMessage(question, "user")
           chatInput.value = ""
-  
-          const loadingId = addChatMessage("Thinking...", "ai")
-  
-          askAI(question, loadingId)
+          
+          // Ask AI without showing "Thinking..." message
+          askAI(question)
         })
       }
 
@@ -875,145 +882,81 @@ document.addEventListener("DOMContentLoaded", () => {
     function addChatMessage(message, type, messageId = null) {
       const chatMessages = document.getElementById("chat-messages")
       const messageElement = document.createElement("div")
-  
-      // Generate a unique ID if not provided
+      
       const id = messageId || "msg-" + Date.now()
       messageElement.id = id
-  
+      
       messageElement.className = `message ${type}-message`
-      messageElement.innerHTML = `<p>${message}</p>`
-  
+      
+      // Format the message
+      let formattedMessage = message
+      
+      // Replace **word** with <strong>word</strong>
+      formattedMessage = formattedMessage.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      
+      // Format lists with bullet points
+      formattedMessage = formattedMessage.replace(/\n\s*\*\s/g, '\n• ')
+      
+      messageElement.innerHTML = `<p>${formattedMessage}</p>`
+      
       chatMessages.appendChild(messageElement)
-  
-      // Scroll to bottom
       chatMessages.scrollTop = chatMessages.scrollHeight
-  
+      
       return id
     }
   
     // Ask AI a question
-    function askAI(question, loadingMessageId) {
-      // Prepare data to send to backend
-      const data = {
-        question: question,
-        location: selectedLocation,
-        weatherData: weatherData,
-        environmentalInsights: environmentalInsights,
+    function askAI(question) {
+      if (!selectedLocation.lat || !selectedLocation.lng) {
+        showToast("Error", "Please select a location on the map first", "error")
+        return
       }
-  
-      // Send to backend API
+
+      if (!weatherData) {
+        showToast("Error", "Please wait for weather data to load", "error")
+        return
+      }
+
       fetch("/api/ask-ai", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          question: question,
+          location: selectedLocation,
+          weatherData: weatherData,
+          environmentalInsights: environmentalInsights,
+        }),
       })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Failed to get AI response")
-          }
-          return response.json()
-        })
+        .then((response) => response.json())
         .then((data) => {
-          // Replace loading message with AI response
-          const loadingMessage = document.getElementById(loadingMessageId)
-          loadingMessage.innerHTML = `<p>${data.response}</p>`
-          loadingMessage.className = "message ai-message"
+          if (data.error) {
+            throw new Error(data.error)
+          }
+          
+          // Add AI response
+          let formattedResponse = data.response
+          
+          // Format the response
+          formattedResponse = formattedResponse.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          formattedResponse = formattedResponse.replace(/\n\s*\*\s/g, '\n• ')
+          
+          addChatMessage(formattedResponse, "ai")
         })
         .catch((error) => {
           console.error("Error:", error)
-  
-          // Fall back to rule-based response if API call fails
-          const response = generateAIResponse(question, weatherData, environmentalInsights)
-  
-          // Replace loading message with AI response
-          const loadingMessage = document.getElementById(loadingMessageId)
-          loadingMessage.innerHTML = `<p>${response}</p>`
-          loadingMessage.className = "message ai-message"
+          // Add error message
+          addChatMessage(`Error: ${error.message}`, "error")
         })
-    }
-  
-    function generateAIResponse(question, weatherData, environmentalInsights) {
-      const q = question.toLowerCase()
-  
-      if (
-        q.includes("weather") ||
-        q.includes("forecast") ||
-        q.includes("temperature") ||
-        q.includes("rain") ||
-        q.includes("sunny")
-      ) {
-        const currentTemp = getTemperatureInCurrentUnit(weatherData.current.temperature)
-        const unit = useMetric ? "C" : "F"
-  
-        return `The current temperature in ${weatherData.location} is ${currentTemp}°${unit} with ${weatherData.current.weatherDescription.toLowerCase()}. 
-        The forecast for the next few days shows temperatures ranging from ${getTemperatureInCurrentUnit(weatherData.forecast[0].minTemp)}°${unit} to ${getTemperatureInCurrentUnit(weatherData.forecast[3].maxTemp)}°${unit}, 
-        with conditions varying from ${weatherData.forecast[0].weatherDescription.toLowerCase()} to ${weatherData.forecast[3].weatherDescription.toLowerCase()}.`
-      }
-
-      else if (q.includes("risk") || q.includes("danger") || q.includes("hazard") || q.includes("threat")) {
-        const highestRisk = environmentalInsights.risks.sort((a, b) => {
-          const levels = { low: 0, moderate: 1, high: 2, severe: 3 }
-          return levels[b.level] - levels[a.level]
-        })[0]
-  
-        return `The most significant environmental risk in this area is ${highestRisk.type.toLowerCase()}, which is currently at a ${highestRisk.level} level. ${highestRisk.description} 
-        Other risks include ${environmentalInsights.risks[1].type.toLowerCase()} (${environmentalInsights.risks[1].level}) and ${environmentalInsights.risks[2].type.toLowerCase()} (${environmentalInsights.risks[2].level}).`
-      }
-  
-      else if (
-        q.includes("sustainability") ||
-        q.includes("sustainable") ||
-        q.includes("eco") ||
-        q.includes("green") ||
-        q.includes("recommendation") ||
-        q.includes("tip")
-      ) {
-        const recommendations = environmentalInsights.sustainability.flatMap((cat) => cat.recommendations).slice(0, 3)
-  
-        return `Based on the environmental conditions in ${weatherData.location}, here are some sustainability recommendations:
-        1. ${recommendations[0]}
-        2. ${recommendations[1]}
-        3. ${recommendations[2]}
-        
-        These practices are particularly important in this area due to the ${environmentalInsights.localEnvironment.ecosystemType.toLowerCase()} ecosystem and the ${environmentalInsights.risks[0].level} risk of ${environmentalInsights.risks[0].type.toLowerCase()}.`
-      }
-  
-      else if (q.includes("air") || q.includes("pollution") || q.includes("quality") || q.includes("breathe")) {
-        return `The current air quality in ${weatherData.location} is categorized as "${weatherData.airQuality.category}". 
-        The Air Quality Index (AQI) is ${weatherData.airQuality.aqi}, with PM2.5 levels at ${weatherData.airQuality.pm25} μg/m³ and PM10 at ${weatherData.airQuality.pm10} μg/m³. 
-        ${
-          weatherData.airQuality.category === "Good"
-            ? "This is considered healthy for all individuals."
-            : weatherData.airQuality.category === "Moderate"
-              ? "This may cause minor breathing discomfort for sensitive individuals."
-              : weatherData.airQuality.category === "Unhealthy for Sensitive Groups"
-                ? "People with respiratory conditions should limit outdoor activities."
-                : "Everyone should reduce outdoor exertion and consider wearing masks when outside."
-        }`
-      }
-  
-      else if (
-        q.includes("ecosystem") ||
-        q.includes("biodiversity") ||
-        q.includes("wildlife") ||
-        q.includes("species") ||
-        q.includes("animal") ||
-        q.includes("plant")
-      ) {
-        return `${weatherData.location} is primarily a ${environmentalInsights.localEnvironment.ecosystemType.toLowerCase()} ecosystem. ${environmentalInsights.localEnvironment.biodiversity} 
-        Local conservation efforts focus on ${environmentalInsights.localEnvironment.conservation.toLowerCase()}
-        However, this ecosystem faces challenges including ${environmentalInsights.localEnvironment.challenges[0].toLowerCase()} and ${environmentalInsights.localEnvironment.challenges[1].toLowerCase()}.`
-      }
-  
-      else {
-        return `Based on the environmental data for ${weatherData.location}, I can tell you that the current temperature is ${getTemperatureInCurrentUnit(weatherData.current.temperature)}°${useMetric ? "C" : "F"} with ${weatherData.current.weatherDescription.toLowerCase()} conditions. 
-        The air quality is ${weatherData.airQuality.category.toLowerCase()}, and the area has a ${environmentalInsights.localEnvironment.ecosystemType.toLowerCase()} ecosystem.
-        The main environmental concern is a ${environmentalInsights.risks[0].level} risk of ${environmentalInsights.risks[0].type.toLowerCase()}.
-        
-        You can ask me specific questions about the weather forecast, air quality, environmental risks, or sustainability recommendations for this location.`
-      }
+        .finally(() => {
+          // Re-enable the input and submit button after processing is complete
+          const chatInput = document.getElementById("chat-input")
+          const submitButton = document.querySelector('#chat-form button[type="submit"]')
+          if (chatInput) chatInput.disabled = false
+          if (submitButton) submitButton.disabled = false
+          if (chatInput) chatInput.focus() // Focus the input for the next message
+        })
     }
   
     function showToast(title, message, type = "info") {
