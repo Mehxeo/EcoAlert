@@ -65,9 +65,7 @@
     background-attachment: fixed;
     background-repeat: no-repeat;
   }
-  body#landing-page {
-    background-color: black !important;
-  }
+
   body::before {
     content: "";
     position: absolute;
