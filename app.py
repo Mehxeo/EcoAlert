@@ -313,37 +313,62 @@ def generate_ai_environmental_insights(lat, lng, location_name, weather_data):
     try:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
         
-        prompt = f"""Analyze the environmental conditions for {location_name} (Latitude: {lat}, Longitude: {lng}).
+        # Analyze current conditions for risks
+        current_conditions = f"""
+Current Weather Analysis:
+- Temperature: {weather_data['current']['temperature']}°C
+- Feels Like: {weather_data['current']['feelsLike']}°C
+- Weather: {weather_data['current']['weatherDescription']}
+- Humidity: {weather_data['current']['humidity']}%
+- Wind Speed: {weather_data['current']['windSpeed']} km/h
+- Air Quality: {weather_data['airQuality']['category']}
+- Visibility: {weather_data['current']['visibility']} km
+- UV Index: {weather_data['current']['uvIndex']}
+"""
+
+        # Analyze forecast for potential risks
+        forecast_analysis = "Forecast Analysis:\n"
+        for day in weather_data['forecast']:
+            forecast_analysis += f"- {day['date']}: {day['weatherDescription']}, High: {day['maxTemp']}°C, Low: {day['minTemp']}°C\n"
         
-        Current Weather Data:
-        {json.dumps(weather_data, indent=2)}
-        
-        Please provide detailed environmental insights including:
-        1. Main environmental risks and their severity levels
-        2. Local ecosystem characteristics
-        3. Sustainability recommendations
-        4. Air quality impact on health
-        
-        Format the response as a JSON object with the following structure:
+        prompt = f"""Analyze the environmental conditions and potential risks for {location_name} (Latitude: {lat}, Longitude: {lng}).
+
+{current_conditions}
+
+{forecast_analysis}
+
+Please analyze this weather data and provide environmental insights focusing on:
+1. Immediate risks based on current conditions
+2. Potential risks based on forecast
+3. Air quality impact on health
+4. Weather-related safety concerns
+5. Recommendations for staying safe
+
+Format the response as a JSON object with the following structure:
+{{
+    "risks": [
         {{
-            "risks": [
-                {{"type": "risk_type", "level": "low/moderate/high/severe", "description": "detailed description"}},
-                ...
-            ],
-            "localEnvironment": {{
-                "ecosystemType": "type",
-                "characteristics": ["characteristic1", "characteristic2", ...]
-            }},
-            "sustainability": [
-                {{"category": "category_name", "recommendations": ["rec1", "rec2", ...]}},
-                ...
-            ],
-            "healthImpact": {{
-                "airQualityEffects": "description",
-                "recommendations": ["rec1", "rec2", ...]
-            }}
-        }}
-        """
+            "type": "risk_type",
+            "level": "low/moderate/high/severe",
+            "description": "detailed description based on weather data",
+            "source": "current_conditions/forecast/air_quality"
+        }},
+        ...
+    ],
+    "safetyRecommendations": [
+        "specific recommendation based on weather data",
+        ...
+    ],
+    "healthImpact": {{
+        "airQualityEffects": "description based on AQI and weather",
+        "recommendations": ["specific health recommendations", ...]
+    }},
+    "weatherAlerts": [
+        "specific alert based on weather conditions",
+        ...
+    ]
+}}
+"""
         
         headers = {
             'Content-Type': 'application/json'
