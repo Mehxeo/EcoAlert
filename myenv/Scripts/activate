@@ -35,7 +35,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\utsav\Desktop\Enviorvision\myenv"
+VIRTUAL_ENV="C:\Users\utsav\Desktop\EcoAlert-1\myenv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
