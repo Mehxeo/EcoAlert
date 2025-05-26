@@ -12,13 +12,16 @@
     margin: 0 auto;
 }
 
-
-
 .points-and-actions {
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: 3rem;
+}
+
+.ecoheader {
+    padding-left: 2rem;
+    padding-top: 1rem;
 }
 
 .points-card {

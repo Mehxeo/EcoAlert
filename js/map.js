@@ -1,3 +1,16 @@
+import { auth } from './firestore.js';
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+
+onAuthStateChanged(auth, user => {
+    const signInLink = document.getElementById('sign-in');
+    if (user) {
+        signInLink.textContent = user.displayName || user.email;
+    }
+    else {
+        signInLink.textContent = "Sign In";
+    }
+});
+
 document.addEventListener("DOMContentLoaded", () => {
     if (localStorage.getItem('user')) {
       const userString = localStorage.getItem('user');
@@ -248,19 +261,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const isDarkTheme = document.body.classList.contains("dark-theme")
   
       try {
-        if (isDarkTheme) {
-          L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-            attribution:
-              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            subdomains: "abcd",
-            maxZoom: 19,
-          }).addTo(map)
-        } else {
-          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            maxZoom: 19,
-          }).addTo(map)
-        }
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          maxZoom: 19,
+        }).addTo(map)
+
   
         setTimeout(() => {
           if (map) map.invalidateSize()

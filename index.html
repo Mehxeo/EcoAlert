@@ -8,8 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous" defer></script>
-    <script src="js/theme.js" defer></script>
-    <script src="js/main.js" defer></script>
+    <script src="js/theme.js"></script>
+    <script src="js/main.js" type="module"></script>
 </head>
 <body class="light-theme" id="landing-page">
     <div class="container">
@@ -22,12 +22,10 @@
             <nav>
                 <ul class="nav-links">
                     <li><a href="index.html" class="active">Home</a></li>
-                    <li><a href="collab.html">About Us</a> </li>
                     <li><a href="ecopoints.html"><span class="Eco-Points"><strong>EcoPoints</strong></span></a></li>
                     <li><a href="map.html">Explore Map</a></li>
                     <li class="user-profile">
                         <a href="signin.html" id="sign-in">Sign In</a>
-                        <img id="user-avatar" class="avatar-img hidden" alt="Profile picture" />
                     </li>
                     <li>
                         <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
@@ -45,7 +43,6 @@
                     <div class="hero-text">
                         <div class="typewriter-container">
                             <h1 class="typed-out">EcoAlert</h1>
-                            <h2 class="subtitle">A Collaboration With <span class="highlight">Mission Green Global</span></h2>
                         </div>
                         <p><span class="Eco-Alert"><strong>EcoAlert</strong></span> utilizes your local environmental, weather, and climate status, providing AI-powered insights into sustainability and natural disaster risk. Earn <span class="Eco-Points"><strong><a href="ecopoints.html">EcoPoints</a></strong></span> to gamify taking action to improve your local environment.</p>
                         </p>

@@ -672,4 +672,5 @@ def generate_air_quality_insights(lat, lng):
         print("Failed to retrieve data:", response.status_code)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+    port = int(os.environ.get("PORT", 10000)) 
+    app.run(host="0.0.0.0", port=port)
