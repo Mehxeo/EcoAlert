@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 li.className = 'action-item fade-in';
                 li.innerHTML = `
                     <div class="action-content">
-                    <span class="action-date">April 6, 2025</span>
+                    <span class="action-date">May 28, 2025</span>
                         <h3>${user.name}'s New Action</h3>
                         <p>${action.text}</p>
                         <span class="points-badge">+${action.points} points</span>
