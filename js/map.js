@@ -1,22 +1,32 @@
-// import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js';
-// import { db } from './firestore.js';
+import { auth } from './firestore.js';
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+
+onAuthStateChanged(auth, user => {
+    const signInLink = document.getElementById('sign-in');
+    if (user) {
+        signInLink.textContent = user.displayName || user.email;
+    }
+    else {
+        signInLink.textContent = "Sign In";
+    }
+});
 
 document.addEventListener("DOMContentLoaded", () => {
-  if (localStorage.getItem('user')) {
-    const userString = localStorage.getItem('user');
-    const user = JSON.parse(userString);
-    const signInElement = document.getElementById('sign-in');
-    const avatarElement = document.getElementById('user-avatar');
-
-    if (signInElement && user.name) {
-        signInElement.textContent = user.name;
+    if (localStorage.getItem('user')) {
+      const userString = localStorage.getItem('user');
+      const user = JSON.parse(userString);
+      const signInElement = document.getElementById('sign-in');
+      const avatarElement = document.getElementById('user-avatar');
+      
+      if (signInElement && user.name) {
+          signInElement.textContent = user.name;
+      }
+      
+      if (avatarElement && user.photoURL) {
+          avatarElement.src = user.photoURL;
+          avatarElement.classList.remove('hidden');
+      }
     }
-    
-    if (avatarElement && user.photoURL) {
-        avatarElement.src = user.photoURL;
-        avatarElement.classList.remove('hidden');
-    }
-}
     // Global variables
     let map
     let marker
@@ -251,19 +261,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const isDarkTheme = document.body.classList.contains("dark-theme")
   
       try {
-        if (isDarkTheme) {
-          L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-            attribution:
-              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            subdomains: "abcd",
-            maxZoom: 19,
-          }).addTo(map)
-        } else {
-          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            maxZoom: 19,
-          }).addTo(map)
-        }
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          maxZoom: 19,
+        }).addTo(map)
+
   
         setTimeout(() => {
           if (map) map.invalidateSize()
@@ -769,6 +771,40 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("no2").textContent = `${data.airQuality.no2} μg/m³`
       document.getElementById("so2").textContent = `${data.airQuality.so2} μg/m³`
       document.getElementById("co").textContent = `${data.airQuality.co} μg/m³`
+
+      // FIRE RISK PREDICTION
+      if (data.fireRisk) {
+        console.log("Fire Risk Data:", data.fireRisk);
+
+        document.getElementById('fire-risk-score').textContent = 
+            `${(data.fireRisk.probability * 10).toFixed(2)}%`;
+        
+        const riskLevel = document.getElementById('fire-risk-level');
+        riskLevel.textContent = data.fireRisk.level.toUpperCase();
+        riskLevel.className = 'badge';
+        
+        switch(data.fireRisk.level) {
+            case 'low':
+                riskLevel.classList.add('badge-low');
+                break;
+            case 'moderate':
+                riskLevel.classList.add('badge-moderate');
+                break;
+            case 'high':
+                riskLevel.classList.add('badge-high');
+                break;
+        }
+
+        // Update risk factors
+        document.getElementById('fire-risk-temp').textContent = 
+            `${data.current.temperature}°C`;
+        document.getElementById('fire-risk-humidity').textContent = 
+            `${data.current.humidity}%`;
+        document.getElementById('fire-risk-wind').textContent = 
+            `${data.current.windSpeed} km/h`;
+        document.getElementById('fire-risk-precip').textContent = 
+            `${data.forecast[0].precipitation}%`;
+    }
     }
   
     // Update environmental insights UI
