@@ -266,7 +266,6 @@ document.addEventListener("DOMContentLoaded", () => {
           maxZoom: 19,
         }).addTo(map)
 
-  
         setTimeout(() => {
           if (map) map.invalidateSize()
         }, 100)
