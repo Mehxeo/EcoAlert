@@ -599,19 +599,19 @@ document.addEventListener("DOMContentLoaded", () => {
         risks: [
           {
             type: "Flooding",
-            level: riskLevels[Math.floor(Math.random() * 4)],
+            level: "low",
             description:
               "Based on topography and proximity to water bodies, this area has potential flood risk during heavy rainfall events.",
           },
           {
             type: "Drought",
-            level: riskLevels[Math.floor(Math.random() * 4)],
+            level: "low",
             description:
               "Historical climate data indicates periodic drought conditions that may affect water availability.",
           },
           {
             type: "Air Pollution",
-            level: riskLevels[Math.floor(Math.random() * 4)],
+            level: "h",
             description: "Urban density and industrial activity contribute to occasional poor air quality conditions.",
           },
         ],
@@ -1147,35 +1147,47 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function updateFloodRiskUI(dailyData) {
+function updateFloodRiskUI(dailyData) {
     const floodRisksGrid = document.getElementById("flood-risks-grid");
   
     if (dailyData && dailyData.river_discharge) {
-      // Limit to the first 6 days
-      const riverDischarge = dailyData.river_discharge.slice(0, 6);
-      const time = dailyData.time.slice(0, 6);
+        // Get flood status from weatherData
+        const floodStatus = weatherData.floodRisk === "anomaly" ? "Anomaly" : "Non-anomaly";
+        
+        // Create status header
+        const statusHeader = `
+            <h3 class="flood-status-header" style="text-align: center; margin-bottom: 20px;">
+                <span class="badge ${floodStatus === 'Non-anomaly' ? 'badge-low' : 'badge-high'}">
+                    ${floodStatus} Flood Circumstances
+                </span>
+            </h3>
+        `;
+
+        // Limit to the first 5 days
+        const riverDischarge = dailyData.river_discharge.slice(0, 5);
+        const time = dailyData.time.slice(0, 5);
   
-      floodRisksGrid.innerHTML = riverDischarge
-        .map((discharge, index) => {
-          const date = time[index];
-          const riskLevel = discharge > 5000 ? "High" : discharge > 2000 ? "Moderate" : "Low";
-          const badgeClass = {
-            High: "badge-high",
-            Moderate: "badge-moderate",
-            Low: "badge-low",
-          }[riskLevel];
+        floodRisksGrid.innerHTML = statusHeader + riverDischarge
+            .map((discharge, index) => {
+                const date = time[index];
+                const riskLevel = discharge > 5000 ? "High" : discharge > 2000 ? "Moderate" : "Low";
+                const badgeClass = {
+                    High: "badge-high",
+                    Moderate: "badge-moderate",
+                    Low: "badge-low",
+                }[riskLevel];
   
-          return `
-            <div class="flood-risk-item">
-              <h4>Flood Risk on ${new Date(date).toLocaleDateString()}</h4>
-              <p><strong>Risk Level:</strong> <span class="badge ${badgeClass}">${riskLevel} Risk</span></p>
-              <p>River discharge: ${discharge} m³/s</p>
-            </div>
-          `;
-        })
-        .join("");
+                return `
+                    <div class="flood-risk-item">
+                        <h4>Flood Risk on ${new Date(date).toLocaleDateString()}</h4>
+                        <p><strong>Risk Level:</strong> <span class="badge ${badgeClass}">${riskLevel} Risk</span></p>
+                        <p>River discharge: ${discharge} m³/s</p>
+                    </div>
+                `;
+            })
+            .join("");
     } else {
-      floodRisksGrid.innerHTML = "<p>No flood data available for this location.</p>";
+        floodRisksGrid.innerHTML = "<p>No flood data available for this location.</p>";
     }
   }
 })

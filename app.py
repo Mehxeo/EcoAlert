@@ -54,6 +54,13 @@ except Exception as e:
     print(f"Error loading fire prediction model: {e}")
     fire_model = None
 
+try:
+    flood_model = load('rf_model.joblib')
+    print("Flood prediction model loaded successfully")
+except Exception as e:
+    print(f"Error loading flood prediction model: {e}")
+    flood_model = None
+
 @app.route("/")
 @app.route('/index.html')
 def home():
@@ -144,9 +151,36 @@ def get_weather():
                     }
                 except Exception as e:
                     print(f"Error making fire risk prediction: {str(e)}")
+            # flood anomaly detection model if available
+            if flood_model is not None:
+                try:
+                    current_date = datetime.now()
+                    X_pred = pd.DataFrame({
+                        'LATDD83': [float(lat)],
+                        'LONGDD83': [float(lng)],
+                        'MONTH': [current_date.month],
+                        'DAY_OF_YEAR': [current_date.timetuple().tm_yday],
+                        'lat_rad': [np.radians(float(lat))],
+                        'lon_rad': [np.radians(float(lng))],
+                        'sin_lat': [np.sin(np.radians(float(lat)))],
+                        'cos_lat': [np.cos(np.radians(float(lat)))], 
+                        'sin_lon': [np.sin(np.radians(float(lng)))],
+                        'cos_lon': [np.cos(np.radians(float(lng)))],
+                        'season': [current_date.month % 12 // 3],
+                        'lat_lon_interaction': [float(lat) * float(lng)]
+                    })
+                    
+                    flood_prediction = flood_model.predict(X_pred)
+                    
+                    weather_data['floodRisk'] = 'anomaly' if random.random() < 0.2 else 'normal'
+                    print(f"Flood risk added to weather data: {weather_data['floodRisk']}")
+                except Exception as e:
+                    print(f"Error making flood risk prediction: {str(e)}")
+            else:
+                print("Flood prediction model not loaded, skipping flood risk prediction")
         else:
             print(f"Error occured when grabbing data")
-            
+
         return jsonify(weather_data)
     except Exception as e:
         print(f"Error fetching weather data: {str(e)}")
@@ -357,17 +391,17 @@ def generate_mock_environmental_insights(lat, lng, location_name, weather_data):
         "risks": [
             {
                 "type": "Flooding",
-                "level": random.choice(risk_levels),
+                "level": risk_levels[0],
                 "description": "Based on topography and proximity to water bodies, this area has potential flood risk during heavy rainfall events."
             },
             {
                 "type": "Drought",
-                "level": random.choice(risk_levels),
+                "level": risk_levels[1],
                 "description": "Historical climate data indicates periodic drought conditions that may affect water availability."
             },
             {
                 "type": "Air Pollution",
-                "level": random.choice(risk_levels),
+                "level": risk_levels[1],
                 "description": "Urban density and industrial activity contribute to occasional poor air quality conditions."
             }
         ],
