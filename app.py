@@ -5,6 +5,11 @@ import random
 from datetime import datetime, timedelta
 import requests
 from dotenv import load_dotenv
+from joblib import load
+import numpy as np
+import pandas as pd
+from datetime import datetime
+from sklearn.cluster import KMeans
 
 print("\nLoading environment variables...")
 load_dotenv()
@@ -40,6 +45,14 @@ EnviormentalChallenges1 = "Nothing"
 EnviormentalChallenges2 = "Nothing"
 EnviormentalChallenges3 = "Nothing"
 app = Flask(__name__, static_folder='.')
+
+# Load the model after the Flask app initialization
+try:
+    fire_model = load('ensemble_fire_model.joblib')
+    print("Fire prediction model loaded successfully")
+except Exception as e:
+    print(f"Error loading fire prediction model: {e}")
+    fire_model = None
 
 @app.route("/")
 @app.route('/index.html')
@@ -77,10 +90,60 @@ def get_weather():
     
     if not lat or not lng:
         return jsonify({"error": "Missing latitude or longitude parameters"}), 400
-    
     try:
         if OPENWEATHER_API_KEY:
             weather_data = get_real_weather_data(float(lat), float(lng))
+
+            def predict_fire_risk(lat, lon, month, day):
+                X_pred = pd.DataFrame({
+                    'LATDD83': [lat],
+                    'LONGDD83': [lon],
+                    'MONTH': [month],
+                    'DAY_OF_YEAR': [day]
+                })
+                
+                # Get predictions from each model and convert to numpy arrays
+                xgb_p = np.array(xgb_model.predict(X_pred))
+                
+                # Return weighted ensemble prediction using numpy operations
+                return xgb_p[0]
+            
+            # Add fire risk prediction if model is available
+            if fire_model is not None:
+                try:
+                    current_date = datetime.now()
+                    
+                    # Prepare features for prediction
+                    X_pred = pd.DataFrame({
+                        'LATDD83': [float(lat)],
+                        'LONGDD83': [float(lng)],
+                        'MONTH': [current_date.month],  # Scale month
+                        'DAY_OF_YEAR': [current_date.timetuple().tm_yday]  # Scale day
+                    })
+                    
+                    # Make prediction using the loaded model
+                    kmeans, cluster_severity, xgb_model = load('ensemble_fire_model.joblib')
+                    def get_cluster_predictions(X):
+                        clusters = kmeans.predict(X[['LATDD83', 'LONGDD83']])
+                        return np.array([cluster_severity[c] for c in clusters])
+
+                    cluster_p = np.array(get_cluster_predictions(X_pred))
+                    xgb_p = np.array(xgb_model.predict(X_pred))
+
+                    risk_score = np.multiply(0.4, cluster_p)[0] + np.multiply(0.6, xgb_p)[0]
+                    
+                    print(f"\nFire Risk Prediction:")
+                    print(f"Location: lat={lat}, lng={lng}")
+                    print(f"Date: month={current_date.month}, day={current_date.timetuple().tm_yday}")
+                    print(f"Predicted Risk Score: {risk_score:.2f}")
+                    
+                    # Add fire risk to weather data
+                    weather_data['fireRisk'] = {
+                        'probability': float(f"{risk_score:.2f}"),
+                        'level': 'high' if risk_score > 3 else 'moderate' if risk_score > 1 else 'low'
+                    }
+                except Exception as e:
+                    print(f"Error making fire risk prediction: {str(e)}")
         else:
             print(f"Error occured when grabbing data")
             
@@ -557,7 +620,7 @@ def generate_ai_response_with_openai(question, location, weather_data, environme
         for day in weather_data['forecast']:
             forecast_info += f"- {day['date']}: {day['weatherDescription']}, High: {day['maxTemp']}°C, Low: {day['minTemp']}°C\n"
         
-        prompt = f"""You are an environmental and weather expert assistant. Provide accurate, helpful responses based on the provided data.
+        prompt = f"""You are Eco AI: an environmental and weather expert assistant. Provide accurate, helpful responses based on the provided data.
 
 Location: {location['name']} (Latitude: {location['lat']}, Longitude: {location['lng']})
 
@@ -590,6 +653,7 @@ IMPORTANT:
 - Do not use asterisks (*) or any special formatting characters
 - Use clear, natural language with proper punctuation
 - Format lists with numbers or bullet points using standard characters
+- Format responses with new line characters as necessary
 - Keep the response concise and focused on the user's question
 - Do not include any generic fallback responses
 - Always provide specific, contextual information based on the user's question and the available data"""

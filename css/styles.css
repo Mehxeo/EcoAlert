@@ -6,6 +6,34 @@
 .hidden {
   display: none !important;
 }
+.risk-score-container {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.risk-score {
+    font-size: 3rem;
+    font-weight: bold;
+    margin: 1rem 0;
+}
+
+.fire-risk-details {
+    padding: 1rem;
+    background: rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+
+.fire-risk-details ul {
+    list-style: none;
+    padding: 0;
+}
+
+.fire-risk-details li {
+    margin: 0.5rem 0;
+    display: flex;
+    justify-content: space-between;
+}
+
 :root {
     /*Light theme*/
     --primary-color: #2e7d32;

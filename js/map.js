@@ -771,6 +771,40 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("no2").textContent = `${data.airQuality.no2} μg/m³`
       document.getElementById("so2").textContent = `${data.airQuality.so2} μg/m³`
       document.getElementById("co").textContent = `${data.airQuality.co} μg/m³`
+
+      // FIRE RISK PREDICTION
+      if (data.fireRisk) {
+        console.log("Fire Risk Data:", data.fireRisk);
+
+        document.getElementById('fire-risk-score').textContent = 
+            `${(data.fireRisk.probability * 10).toFixed(2)}%`;
+        
+        const riskLevel = document.getElementById('fire-risk-level');
+        riskLevel.textContent = data.fireRisk.level.toUpperCase();
+        riskLevel.className = 'badge';
+        
+        switch(data.fireRisk.level) {
+            case 'low':
+                riskLevel.classList.add('badge-low');
+                break;
+            case 'moderate':
+                riskLevel.classList.add('badge-moderate');
+                break;
+            case 'high':
+                riskLevel.classList.add('badge-high');
+                break;
+        }
+
+        // Update risk factors
+        document.getElementById('fire-risk-temp').textContent = 
+            `${data.current.temperature}°C`;
+        document.getElementById('fire-risk-humidity').textContent = 
+            `${data.current.humidity}%`;
+        document.getElementById('fire-risk-wind').textContent = 
+            `${data.current.windSpeed} km/h`;
+        document.getElementById('fire-risk-precip').textContent = 
+            `${data.forecast[0].precipitation}%`;
+    }
     }
   
     // Update environmental insights UI
