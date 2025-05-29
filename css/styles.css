@@ -6,6 +6,34 @@
 .hidden {
   display: none !important;
 }
+.risk-score-container {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.risk-score {
+    font-size: 3rem;
+    font-weight: bold;
+    margin: 1rem 0;
+}
+
+.fire-risk-details {
+    padding: 1rem;
+    background: rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+
+.fire-risk-details ul {
+    list-style: none;
+    padding: 0;
+}
+
+.fire-risk-details li {
+    margin: 0.5rem 0;
+    display: flex;
+    justify-content: space-between;
+}
+
 :root {
     /*Light theme*/
     --primary-color: #2e7d32;
@@ -97,6 +125,23 @@
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid var(--primary-color);
+}
+
+/* FOR COLLABORATION SUBTITLE */
+.subtitle { 
+  font-size: 3rem;
+  color: var(--text-color);
+  opacity: 0;
+  margin-top: -1.5cm;
+  animation: fadeInUp 0.6s ease forwards;
+  animation-delay: 0.5s;
+}
+
+/* FOR MISSION GREEN GLOBAL BOLD */
+.highlight {
+  font-weight: bold;
+  color: #41b247;
+  text-shadow: 0 0 5px #2e7d32, 0 0 10px #2e7d32, 0 0 15px #2e7d32;
 }
 
 .hidden {
@@ -473,7 +518,6 @@
     border-radius: 10px;
     box-shadow: var(--shadow);
     text-align: center;
-    cursor: pointer;
     opacity: 0;
     transform: translateY(20px);
     animation-delay: calc(var(--animation-order) * 0.5s);
